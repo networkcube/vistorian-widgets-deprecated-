@@ -5,12 +5,14 @@
     "main": "lib/index.js",
     "types": "lib/index.d.js",
     "scripts": {
-        "build": "tsc --pretty false"
+        "build": "tsc --pretty false",
+        "clean": "rimraf lib"
     },
     "author": "Benjamin Bach <benj.bach@gmail.com>",
     "license": "MIT",
     "devDependencies": {
         "@types/jquery": "^3.3.29",
+        "rimraf": "^2.6.3",
         "typescript": "^3.2"
     },
     "repository": {
