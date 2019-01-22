@@ -1,7 +1,9 @@
-import * as utils from "utils";
-import * as dynamicgraph from "dynamicgraph";
+/// <reference types="vistorian-core" />
 
-import * as moment from 'moment';
+import * as dynamicgraph from "dynamicgraph";
+import * as moment from "moment";
+import * as utils from "utils";
+
 import * as d3 from 'd3';
 import {
     makeAlphaBuffer,
@@ -45,7 +47,7 @@ import {
     length,
     normalize,
     setLength
-} from './lib/glutils';
+} from './glutils';
 
 export class Timeline {
     /* INIT ????? */

@@ -1,4 +1,6 @@
-import "vistorian-core";
+/// <reference types="vistorian-core" />
+
+import { LegendElement} from 'dynamicgraph';
 
 import * as d3 from 'd3'
 
@@ -15,7 +17,7 @@ export class Legend {
 
     height: number = 0; // INIT ???? 
 
-    constructor(data: dynamicgraph.LegendElement[], handlerFunction?: Function) {
+    constructor(data: LegendElement[], handlerFunction?: Function) {
         this.data = data;
     }
 

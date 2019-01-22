@@ -13,12 +13,14 @@
     },
     "pretty": false,
     "files": [
-        "./widgets/legend.ts",
-        "./widgets/rangeslider.ts",
-        "./widgets/slider.ts",
-        "./widgets/smartslider.ts",
-        "./widgets/timeline.ts",
-        "./widgets/timeslider.ts",
-        "./widgets/ui.ts"
+        "./src/legend.ts",
+        "./src/rangeslider.ts",
+        "./src/slider.ts",
+        "./src/smartslider.ts",
+        "./src/timeline.ts",
+        "./src/timeslider.ts",
+        "./src/ui.ts",
+        "./src/glutils.ts",
+        "./src/BSpline.ts"
     ]
 }
