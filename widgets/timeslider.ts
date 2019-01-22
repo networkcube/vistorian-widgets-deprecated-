@@ -1,19 +1,6 @@
-import {
-    utils,
-    queries,
-    datamanager,
-    dynamicgraph,
-    setOps,
-    netClustering,
-    motifs,
-    analytics,
-    main,
-    colors,
-    search,
-    messenger,
-    science,
-    ordering
-} from "../index"
+import * as queries from "queries";
+import * as dynamicgraph from "dynamicgraph";
+import * as messenger from "messenger";
 
 import { Slider } from './slider'
 

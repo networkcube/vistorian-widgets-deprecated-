@@ -1,22 +1,8 @@
-import {
-    utils,
-    queries,
-    datamanager,
-    dynamicgraph,
-    setOps,
-    netClustering,
-    motifs,
-    analytics,
-    main,
-    colors,
-    search,
-    messenger,
-    science,
-    ordering
-} from "../index"
+import * as utils from "utils";
+import * as dynamicgraph from "dynamicgraph";
 
-import * as moment from 'moment'
-import * as d3 from 'd3'
+import * as moment from 'moment';
+import * as d3 from 'd3';
 import {
     makeAlphaBuffer,
     addBufferedHatchedRect,
@@ -59,7 +45,7 @@ import {
     length,
     normalize,
     setLength
-} from './lib/glutils'
+} from './lib/glutils';
 
 export class Timeline {
     /* INIT ????? */

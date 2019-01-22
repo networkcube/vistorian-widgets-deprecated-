@@ -1,19 +1,4 @@
-import {
-    utils,
-    queries,
-    datamanager,
-    dynamicgraph,
-    setOps,
-    netClustering,
-    motifs,
-    analytics,
-    main,
-    colors,
-    search,
-    messenger,
-    science,
-    ordering
-} from "../index"
+import "vistorian-core";
 
 import * as d3 from 'd3'
 
