@@ -48,13 +48,13 @@ export class TimeSlider {
     times: queries.Time[];
     sliderWidth: number;
     widgetWidth: number;
-    callBack = undefined;
+    callBack: Function | undefined = undefined;
 
     // function that is called when this time slider's time is changed
-    propagateButton: RadioButton;
+    propagateButton: RadioButton = new RadioButton('#000000');
 
-    labelStart: d3.Selection<d3.BaseType, {}, HTMLElement, any>;
-    labelEnd: d3.Selection<d3.BaseType, {}, HTMLElement, any>;
+    labelStart: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>;
+    labelEnd: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>;
 
     tickScale: any;
     tickHeightFunction: Function;
@@ -72,7 +72,7 @@ export class TimeSlider {
 
         this.tickScale = d3.scaleUtc()
             .range([this.MARGIN_SLIDER_LEFT, this.MARGIN_SLIDER_LEFT + this.sliderWidth])
-            .domain([new Date(dgraph.time(0).unixTime()), new Date(dgraph.times().last().unixTime())]);
+            .domain([new Date(this.times[0].unixTime()), new Date(dgraph.times().last().unixTime())]); // this.times[0] == dgraph.time(0) ?? 
         this.tickHeightFunction = d3.scaleLinear()
             .range([4, this.SLIDER_TOP - 10])
             .domain([dgraph.gran_min, dgraph.gran_max]);
@@ -189,7 +189,7 @@ export class TimeSlider {
         return time.format(formatString.trim());
     }
 
-    getGranularityFormattingString(granualarity, separator: boolean) {
+    getGranularityFormattingString(granualarity: any, separator: boolean) {
         switch (granualarity) {
             case 0: return 'SSS';
             case 1: return 'ss' + (separator ? '.' : '');

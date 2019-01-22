@@ -10,6 +10,7 @@
   "author": "Benjamin Bach <benj.bach@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jquery": "^3.3.29",
     "typescript": "^3.2"
   },
   "repository": {
@@ -23,6 +24,7 @@
   "homepage": "https://github.com/networkcube/networkcube#readme",
   "dependencies": {
     "@types/d3": "^5.7.0",
+    "@types/three": "^0.93.15",
     "d3": "^5.7.0",
     "jquery": "^3.3.1",
     "moment": "^2.23.0",

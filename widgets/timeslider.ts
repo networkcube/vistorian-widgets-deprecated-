@@ -69,19 +69,19 @@ export class TimeSlider {
         this.sliderWidth = width - this.MARGIN_SLIDER_RIGHT + 5 - this.MARGIN_SLIDER_LEFT - 5;
         var lastDummyYear: moment.Moment = this.times[this.times.length - 1].moment();
         var minGran: number = dgraph.gran_min;
-        var minGranName: string = '';
+        var minGranName: moment.unitOfTime.DurationConstructor = 'milliseconds';
         switch (minGran) {
             case 1: minGranName = 'milliseconds'; break;
-            case 2: minGranName = 'secondss'; break;
+            case 2: minGranName = 'seconds'; break;
             case 3: minGranName = 'minutes'; break;
             case 4: minGranName = 'hours'; break;
             case 5: minGranName = 'days'; break;
             case 5: minGranName = 'weeks'; break;
             case 6: minGranName = 'months'; break;
             case 7: minGranName = 'years'; break;
-            case 8: minGranName = 'decades'; break;
-            case 9: minGranName = 'centuries'; break;
-            case 10: minGranName = 'millenia'; break;
+            // case 8: minGranName = 'decades'; break;
+            // case 9: minGranName = 'centuries'; break;
+            // case 10: minGranName = 'millenia'; break;
         }
         console.log('minGran', minGranName);
         

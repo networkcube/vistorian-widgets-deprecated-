@@ -1,4 +1,4 @@
-/// <reference path="../../vistorian-core/lib/index.d.ts" />
+/// <reference path="../vistorian-core/lib/index.d.ts" />
 
 export import utils = require("utils")
 export import queries = require("queries")

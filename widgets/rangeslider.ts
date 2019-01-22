@@ -23,7 +23,7 @@ export class RangeSlider {
     width: number;
     g: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; // ???????????????
 
-    dragEndCallBackFn: Function;
+    dragEndCallBackFn: any; // BEFORE Function;
 
     constructor(
         x: number,

@@ -7,13 +7,18 @@
         //"outFile": "./lib/index.js",
         "strict": true,
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": false,
+        "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "declaration": true
     },
     "pretty": false,
     "files": [
-        "./src/bookmarkbrowser/bookmarkbrowser.ts",
-        "./src/nodelink/nodelink.ts"
+        "./widgets/legend.ts",
+        "./widgets/rangeslider.ts",
+        "./widgets/slider.ts",
+        "./widgets/smartslider.ts",
+        "./widgets/timeline.ts",
+        "./widgets/timeslider.ts",
+        "./widgets/ui.ts"
     ]
 }

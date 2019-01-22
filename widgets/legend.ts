@@ -17,7 +17,7 @@ import {
 
 import * as d3 from 'd3'
 
-import * as jquery from 'jquery'
+import $ from 'jquery'
 
 export class Legend {
 
@@ -28,7 +28,7 @@ export class Legend {
         top: 20
     }
 
-    height: number
+    height: number = 0; // INIT ???? 
 
     constructor(data: dynamicgraph.LegendElement[], handlerFunction?: Function) {
         this.data = data;
@@ -38,9 +38,9 @@ export class Legend {
         this.clickCallBack = handlerFunction;
     }
 
-    legendEntries;
+    legendEntries: any;
 
-    clickCallBack: Function;
+    clickCallBack: any; // BEFORE Function;
 
     appendTo(svg: SVGSVGElement) {
 
@@ -53,7 +53,7 @@ export class Legend {
             })
         this.height = this.margin.top + this.data.length * 20
 
-        jquery.$(svg).height(this.height);
+        $(svg).height(this.height);
 
 
         this.legendEntries.append('circle')

@@ -65,7 +65,7 @@ export class SmartSlider {
     rect: any;
     singleTimeStepX = 0;
 
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
+    appendTo(svg: d3.Selection<SVGGElement, {}, HTMLElement, any>) {
 
         this.svg = svg;
 

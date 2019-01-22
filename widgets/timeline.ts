@@ -17,15 +17,59 @@ import {
 
 import * as moment from 'moment'
 import * as d3 from 'd3'
+import {
+    makeAlphaBuffer,
+    addBufferedHatchedRect,
+    addBufferedRect,
+    addBufferedCirlce,
+    addBufferedDiamond,
+    createRectFrame,
+    createDiagonalCross,
+    makeBuffer3f,
+    makeBuffer4f,
+    updateBuffer,
+    createText,
+    getMousePos,
+    WebGL,
+    initWebGL,
+    setWebGL,
+    selectAll,
+    WebGLElementQuery,
+    setStyle,
+    setText,
+    setX1,
+    setY1,
+    setX2,
+    setY2,
+    createG,
+    GroupElement,
+    createCirclesNoShader,
+    createCirclesWithBuffers,
+    createRectangles,
+    createPaths,
+    createPolygons,
+    createLines,
+    createWebGLText,
+    createPath,
+    createPolygon,
+    WebGLInteractor,
+    mouseToWorldCoordinates,
+    curve,
+    CheckBox,
+    length,
+    normalize,
+    setLength
+} from './lib/glutils'
 
 export class Timeline {
+    /* INIT ????? */
 
     TICK_MIN_DIST = 13;
-    LABEL_MIN_DIST = 13
+    LABEL_MIN_DIST = 13;
 
     WIDTH: number;
     HEIGHT: number;
-    webgl: glutils.WebGL;
+    webgl: WebGL;
     network: dynamicgraph.DynamicGraph;
     x: number;
     y: number;
@@ -37,24 +81,24 @@ export class Timeline {
     minTimeId: any;
     maxTimeId: any;
 
-    timeObjects: moment.Moment[] = [];
+    timeObjects: moment.Moment[] = []; // INIT
     highlightPointer: any;
     highlightLabel: any;
 
-    minGran: number;
-    maxGran: number;
+    minGran: number = Number.MIN_VALUE; // INIT
+    maxGran: number = Number.MAX_VALUE; // INIT
 
-    granules: any;
+    granules: moment.unitOfTime.Base[] = [];
 
-    tickmarks: glutils.WebGLElementQuery;
-    timeLabels: glutils.WebGLElementQuery;
+    tickmarks: WebGLElementQuery = new WebGLElementQuery(); // INIT
+    timeLabels: WebGLElementQuery = new WebGLElementQuery(); // INIT
 
     tick_minGran_visible: any;
-    tick_minGran_visible_prev: any = -1;
+    tick_minGran_visible_prev: any = -1; // INIT
 
     label_minGran_visible: any;
 
-    constructor(webgl: glutils.WebGL,
+    constructor(webgl: WebGL,
         network: dynamicgraph.DynamicGraph,
         x: number, y: number,
         width: number, height: number) {
@@ -80,22 +124,22 @@ export class Timeline {
         // create non-indexed times
         var unix_start = times[0].unixTime();
         var unix_end = times[times.length - 1].unixTime();
-        var start = moment(unix_start + '', 'x').startOf(this.granules[this.minGran]);
-        var end = moment(unix_end + '', 'x').startOf(this.granules[this.minGran]);
-        var numTimes = Math.ceil(Math.abs(start.diff(end, this.granules[this.minGran] + 's'))); // ??????????
+        var start = moment.utc(unix_start + '', 'x').startOf(this.granules[this.minGran]);
+        var end = moment.utc(unix_end + '', 'x').startOf(this.granules[this.minGran]);
+        var numTimes = Math.ceil(Math.abs(start.diff(end, this.granules[this.minGran]))); // WITHOUT 's'
         this.maxGran = Math.min(this.maxGran, this.granules.length - 1);
         var granularity_levels = ((this.maxGran - this.minGran) + 1);
         var granularity_height = this.HEIGHT / granularity_levels;
 
         // create all timeObjects (UTC)
-        var prev = moment(unix_start + '', 'x');
-        var prevprev = moment((unix_start - 86400000) + '', 'x'); // substract one day
+        var prev = moment.utc(unix_start + '', 'x');
+        var prevprev = moment.utc((unix_start - 86400000) + '', 'x'); // substract one day
         // bb: check why 'substract' is not working:
         // prevprev.substract(1, this.granules[this.minGran] + 's');
         this.timeObjects.push(prev);
         for (var i = 1; i < numTimes; i++) {
-            prev = moment(prev)
-            prev.add(1, this.granules[this.minGran] + 's')
+            prev = moment.utc(prev) // ???
+            prev.add(1, this.granules[this.minGran]) // WITHOUT 's'
             this.timeObjects.push(prev)
         }
 
@@ -231,8 +275,8 @@ export class Timeline {
         this.tick_minGran_visible = undefined;
         for (var g = this.minGran; g < this.maxGran && this.tick_minGran_visible == undefined; g++) {
             // calculate how many times of this granularity can fit.
-            t1 = moment(minTime).startOf(this.granules[g])
-            t2 = moment(maxTime).startOf(this.granules[g])
+            t1 = moment.utc(minTime).startOf(this.granules[g])
+            t2 = moment.utc(maxTime).startOf(this.granules[g])
             if (g <= 7) {
                 requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[g])
             } else {
@@ -240,7 +284,7 @@ export class Timeline {
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 10
                 if (g == 9)
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 100
-                if (g == 10)
+                else // BEFORE if (g == 10)
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 1000
             }
 
@@ -266,15 +310,15 @@ export class Timeline {
 
             this.timeLabels = this.webgl.selectAll()
                 .data(this.timeObjects)
-                .filter((d, i) => {
+                .filter((d: any, i: number) => {
                     var visible =
                         this.timeGranularities[i] >= this.tick_minGran_visible;
                     return visible;
                 })
                 .append('text')
-                .attr('x', (d, i) => this.position_x(this.timeObjects.indexOf(d)) + 8)
-                .attr('y', (d, i) => -this.HEIGHT + 17)
-                .text((d, i) => this.formatTime(this.timeObjects.indexOf(d)))
+                .attr('x', (d: any, i: number) => this.position_x(this.timeObjects.indexOf(d)) + 8)
+                .attr('y', (d: any, i: number) => -this.HEIGHT + 17)
+                .text((d: any, i: number) => this.formatTime(this.timeObjects.indexOf(d)))
                 .attr('z', 1)
                 .style('fill', '#000')
                 .attr('rotation', 90)
@@ -289,7 +333,7 @@ export class Timeline {
 
         // console.log('this.minGran_visible',this.granules[this.tick_minGran_visible])
         this.tickmarks
-            .style('opacity', (d, i) => {
+            .style('opacity', (d: any, i: number) => {
                 var visible =
                     i == 0
                         || i >= this.minTimeId
@@ -299,16 +343,16 @@ export class Timeline {
                         : 0;
                 return visible;
             })
-            .attr('x1', (d, i) => this.position_x(i))
-            .attr('x2', (d, i) => this.position_x(i))
+            .attr('x1', (d: any, i: number) => this.position_x(i))
+            .attr('x2', (d: any, i: number) => this.position_x(i))
             // .attr('y1',(d,i)=> { this.position_y(d) })
             // .attr('y2',(d,i)=> -this.HEIGHT)
-            .style('stroke-width', (d, i) => this.label_opacity(this.timeGranularities[i]) * 4)
+            .style('stroke-width', (d: any, i: number) => this.label_opacity(this.timeGranularities[i]) * 4)
 
 
         // update labels
         this.timeLabels
-            .style('opacity', (d, i) => {
+            .style('opacity', (d: any, i: number) => {
                 var globalId = this.timeObjects.indexOf(d)
                 var visible =
                     globalId >= this.minTimeId
@@ -316,7 +360,7 @@ export class Timeline {
                     && this.timeGranularities[globalId] >= this.label_minGran_visible
                 return visible ? 1 : 0;
             })
-            .attr('x', (d, i) => {
+            .attr('x', (d: any, i: number) => {
                 var globalId = this.timeObjects.indexOf(d)
                 return this.position_x(globalId) + 8;
             })
@@ -332,14 +376,14 @@ export class Timeline {
         }
     }
 
-    formatTime(index): string {
+    formatTime(index: number): string {
         var t = this.timeObjects[index];
         var g = Math.min(Math.max(this.tick_minGran_visible, this.timeGranularities[index]), 7);
 
         return utils.formatAtGranularity(t, g)
     }
 
-    highlightId: number
+    highlightId: any; // INIT ???
     highlight(unixTime?: number) {
 
         if (unixTime == undefined) {
@@ -349,7 +393,7 @@ export class Timeline {
         }
 
         for (var i = 0; i < this.timeObjects.length; i++) {
-            if ((this.timeObjects[i].unix() * 1000) > unixTime) {
+            if (!unixTime || (this.timeObjects[i].unix() * 1000) > unixTime) { // IS CORRECT !unixTime ?? 
                 this.highlightId = i - 1;
                 break;
             }

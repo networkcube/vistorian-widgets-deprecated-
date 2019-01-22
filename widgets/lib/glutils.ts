@@ -1,5 +1,9 @@
 import * as THREE from 'three'
-import * as jquery from 'jquery'
+import $ from 'jquery'
+import {
+    BSpline
+} from './BSpline'
+import { Vector2 } from 'three';
 
 //module glutils {
 
@@ -64,8 +68,8 @@ export function addBufferedRect(vertexArray: number[][], x: number, y: number, z
 }
 
 export function addBufferedCirlce(vertexArray: number[][], x: number, y: number, z: number, radius: number, colorArray: number[][], c: number[]) {
-    var segments = 11;
-    var angle = Math.PI / (segments / 2)
+    var segments: number = 11;
+    var angle: number = Math.PI / (segments / 2)
     for (var i = 0; i < segments; i++) {
         vertexArray.push(
             [x + Math.cos(i * angle) * radius, y + Math.sin(i * angle) * radius, z],
@@ -176,20 +180,19 @@ export function updateBuffer(buffer: number[], array: number[][], size: number) 
 
 
 
-export function createText(string: string, x: number, y: number, z: number, size: number, color, weight: string = 'normal', align: string = 'left'): THREE.Mesh {
+export function createText(string: string, x: number, y: number, z: number, size: number, color: string, weight: string = 'normal', align: string = 'left'): THREE.Mesh {
     var textGeom: THREE.TextGeometry = new THREE.TextGeometry(string, {
+        // font: 'helvetiker', // IT'S NOT CORRECT FORMAT
         size: size,
         height: 1,
-        weight: weight,
         curveSegments: 1,
-        font: 'helvetiker'
     })
-    var textMaterial = new THREE.MeshBasicMaterial({ color: color });
+    var textMaterial: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({ color: color });
     var label: THREE.Mesh = new THREE.Mesh(textGeom, textMaterial)
 
     if (align == 'right') {
         label.geometry.computeBoundingBox();
-        var bounds: THREE.BoundingBox3D = label.geometry.boundingBox;
+        var bounds: THREE.Box3 = label.geometry.boundingBox;
         x -= bounds.max.x - bounds.min.x;
     }
 
@@ -197,7 +200,7 @@ export function createText(string: string, x: number, y: number, z: number, size
     return label;
 }
 
-export function getMousePos(canvas, x, y) {
+export function getMousePos(canvas: any, x: any, y: any) {
     var rect = canvas.getBoundingClientRect();
     return {
         x: x - rect.left,
@@ -219,12 +222,13 @@ export function getMousePos(canvas, x, y) {
 var txtCanvas = document.createElement("canvas")
 
 export class WebGL {
-    scene: THREE.Scene;
-    camera: THREE.OrthographicCamera;
-    renderer: THREE.WebGLRenderer;
-    canvas;
-    geometry: THREE.BufferGeometry;
-    interactor: WebGLInteractor;
+    /* INIT ?????? */
+    scene: THREE.Scene = new THREE.Scene();
+    camera: THREE.OrthographicCamera = new THREE.OrthographicCamera(0, 0, 0, 0);
+    renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer();
+    canvas: any;
+    geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
+    interactor: any; // BEFORE WebGLInteractor;
 
     elementQueries: WebGLElementQuery[] = []
 
@@ -262,16 +266,16 @@ export class WebGL {
     ///////////////////////
 
     enableZoom(b?: boolean) {
+        function mouseWheel(event: any) {
+            event.preventDefault();
+
+            webgl.camera.zoom += event.wheelDelta / 1000;
+            webgl.camera.zoom = Math.max(0.1, webgl.camera.zoom)
+            webgl.camera.updateProjectionMatrix();
+            webgl.render();
+        }
         if (b) {
             window.addEventListener("mousewheel", mouseWheel, false);
-            function mouseWheel(event) {
-                event.preventDefault();
-
-                webgl.camera.zoom += event.wheelDelta / 1000;
-                webgl.camera.zoom = Math.max(0.1, webgl.camera.zoom)
-                webgl.camera.updateProjectionMatrix();
-                webgl.render();
-            }
         } else {
             window.addEventListener("mousewheel", mouseWheel, false);
         }
@@ -290,7 +294,8 @@ export class WebGL {
 
 }
 
-var webgl;
+var webgl: WebGL;
+
 export function initWebGL(parentId: string, width: number, height: number, params?: Object): WebGL {
 
     webgl = new WebGL(params);
@@ -318,58 +323,49 @@ export function initWebGL(parentId: string, width: number, height: number, param
 
     // position canvas element containing cells
     webgl.canvas = webgl.renderer.domElement;
-    jquery.$("#" + parentId).append(webgl.canvas);
+    $("#" + parentId).append(webgl.canvas);
 
     webgl.interactor = new WebGLInteractor(webgl.scene, webgl.canvas, webgl.camera);
 
 
-    var light = new THREE.PointLight(0x000000, 1, 100);
+    var light: THREE.PointLight = new THREE.PointLight(0x000000, 1, 100);
     light.position.set(0, 0, 1000);
     webgl.scene.add(light);
 
     return webgl;
 }
 
-export function setWebGL(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Renderer, canvas) {
+// camera BEFORE THREE.Camera, renderer BEFORE THREE.Renderer
+export function setWebGL(scene: THREE.Scene, camera: THREE.OrthographicCamera, renderer: THREE.WebGLRenderer, canvas: any) {
     webgl = new WebGL();
     webgl.camera = camera;
     webgl.scene = scene;
     webgl.renderer = renderer;
 }
 
-
-
-
-
-
-
-
 // INTERACTION
-
-
 
 /// SELECTIONS in the style of D3
 
 export function selectAll(): WebGLElementQuery {
-    var q = new WebGLElementQuery();
+    var q: WebGLElementQuery = new WebGLElementQuery();
     webgl.elementQueries.push(q)
     return q;
 }
 
 
-
 export class WebGLElementQuery {
     dataElements: Object[] = [];
-    visualElements: Object[] = [];
-    mesh: THREE.Mesh;
+    visualElements: any[] = [];
+    mesh: THREE.Mesh = new THREE.Mesh();
     children: Object[] = []
-    scene: THREE.Scene;
-    mouseOverHandler: Function;
-    mouseMoveHandler: Function;
-    mouseOutHandler: Function;
-    mouseDownHandler: Function;
-    mouseUpHandler: Function;
-    clickHandler: Function;
+    scene: THREE.Scene = new THREE.Scene();
+    mouseOverHandler: any; // BEFORE Function;
+    mouseMoveHandler: any; // BEFORE Function;
+    mouseOutHandler: any; // BEFORE Function;
+    mouseDownHandler: any; // BEFORE Function;
+    mouseUpHandler: any; // BEFORE Function;
+    clickHandler: any; // BEFORE Function;
 
     // attribute arrays
     x: number[] = [];
@@ -378,12 +374,12 @@ export class WebGLElementQuery {
     r: number[] = [];
 
     // style arrays
-    fill: number[] = [];
-    stroke: number[] = [];
+    fill: string[] = []; // BEFORE number
+    stroke: string[] = []; // BEFORE number
     strokewidth: number[] = [];
-    opacity: number[] = []
+    opacity: number[] = [];
 
-    shape: string;
+    shape: string = ''; // INIT ??
 
     updateAttributes: boolean = false
     updateStyle: boolean = false
@@ -400,7 +396,7 @@ export class WebGLElementQuery {
     }
 
     append(shape: string): WebGLElementQuery {
-        var elements = []
+        var elements: any[] = []
         switch (shape) {
             // case 'circle': elements = createCirclesNoShader(this.dataElements, this.scene); break
             case 'circle': createCirclesWithBuffers(this, this.scene); break
@@ -444,16 +440,15 @@ export class WebGLElementQuery {
     }
 
     filter(f: Function): WebGLElementQuery {
-        var arr = [];
-        var visArr = []
+        var arr: any[] = [];
+        var visArr: any[] = []
         for (var i = 0; i < this.dataElements.length; i++) {
             if (f(this.dataElements[i], i)) {
                 arr.push(this.dataElements[i])
                 visArr.push(this.visualElements[i])
             }
         }
-        var q = new WebGLElementQuery()
-            .data(arr);
+        var q: WebGLElementQuery = new WebGLElementQuery().data(arr);
         q.visualElements = visArr;
         return q;
     }
@@ -463,7 +458,7 @@ export class WebGLElementQuery {
         var l = this.visualElements.length;
         if (this.IS_SHADER) {
             for (var i = 0; i < this.dataElements.length; i++) {
-                this[name][i] = v instanceof Function ? v(this.dataElements[i], i) : v
+                (this as any)[name][i] = v instanceof Function ? v(this.dataElements[i], i) : v
             }
         } else {
             for (var i = 0; i < l; i++) {
@@ -483,7 +478,7 @@ export class WebGLElementQuery {
         if (this.IS_SHADER) {
             name = name.replace('-', '');
             for (var i = 0; i < this.dataElements.length; i++) {
-                this[name][i] = v instanceof Function ? v(this.dataElements[i], i) : v
+                (this as any)[name][i] = v instanceof Function ? v(this.dataElements[i], i) : v
             }
         } else {
             for (var i = 0; i < l; i++) {
@@ -501,8 +496,8 @@ export class WebGLElementQuery {
             return this;
 
         var l = this.visualElements.length;
-        var vertexPositionBuffer = []
-        var vertexColorBuffer = []
+        var vertexPositionBuffer: any[] = []
+        var vertexColorBuffer: any[] = []
         var c
         if (this.shape == 'circle') {
             for (var i = 0; i < this.dataElements.length; i++) {
@@ -510,12 +505,12 @@ export class WebGLElementQuery {
                 addBufferedCirlce(vertexPositionBuffer, this.x[i], this.y[i], this.z[i], this.r[i], vertexColorBuffer, [c.r, c.g, c.b, this.opacity[i]])
             }
         }
-        var geometry = this.mesh.geometry;
+        var geometry: any = this.mesh.geometry;
         geometry.addAttribute('position', new THREE.BufferAttribute(makeBuffer3f(vertexPositionBuffer), 3));
         geometry.addAttribute('customColor', new THREE.BufferAttribute(makeBuffer4f(vertexColorBuffer), 4));
         geometry.needsUpdate = true;
         geometry.verticesNeedUpdate = true;
-        this.mesh.material.needsUpdate = true;
+        (this.mesh.material as THREE.Material).needsUpdate = true;
 
         this.updateAttributes = false;
         this.updateStyle = false;
@@ -548,7 +543,7 @@ export class WebGLElementQuery {
         return this;
     }
 
-    call(method: string, dataElement: any, event): WebGLElementQuery {
+    call(method: string, dataElement: any, event: any): WebGLElementQuery {
         var i = this.dataElements.indexOf(dataElement);
         switch (method) {
             case 'mouseover': this.mouseOverHandler(dataElement, i, event); break;
@@ -581,9 +576,9 @@ export class WebGLElementQuery {
             case 'scaleY': element.scale.y = v; break;
             default: console.error('Attribute', attr, 'does not exist.')
         }
-        element.geometry.verticesNeedUpdate = true;
-        element.geometry.elementsNeedUpdate = true;
-        element.geometry.lineDistancesNeedUpdate = true;
+        (element.geometry as THREE.Geometry).verticesNeedUpdate = true;
+        (element.geometry as THREE.Geometry).elementsNeedUpdate = true;
+        (element.geometry as THREE.Geometry).lineDistancesNeedUpdate = true;
     }
 
     removeAll() {
@@ -604,7 +599,7 @@ export class WebGLElementQuery {
 
 
 
-function setStyle(element: any, attr: string, v: any, query: WebGLElementQuery) {
+export function setStyle(element: any, attr: string, v: any, query: WebGLElementQuery) {
     switch (attr) {
         case 'fill':
             if (query.shape == 'text')
@@ -642,7 +637,7 @@ function setStyle(element: any, attr: string, v: any, query: WebGLElementQuery) 
 }
 
 // var textCtx
-function setText(mesh: any, text: string, parConfig?: Object) {
+export function setText(mesh: any, text: string, parConfig?: any) {
     var config = parConfig;
     if (config == undefined) {
         config = {};
@@ -656,19 +651,22 @@ function setText(mesh: any, text: string, parConfig?: Object) {
 
     var context = txtCanvas.getContext("2d");
 
-    var SIZE = 30;
-    context.font = SIZE + "pt Helvetica";
-    var WIDTH = context.measureText(text).width;
-    txtCanvas.width = WIDTH;
-    txtCanvas.height = SIZE;
+    var SIZE: number = 30;
+    var WIDTH: number = 0; // ????????
+    if (context) {
+        context.font = SIZE + "pt Helvetica";
+        WIDTH = context.measureText(text).width;
+        txtCanvas.width = WIDTH;
+        txtCanvas.height = SIZE;
 
-    context.textAlign = "left";
-    context.textBaseline = "middle";
-    context.fillStyle = config.color;
-    context.font = SIZE + "pt Helvetica";
-    // context.clearColor(1.0, 1.0, 0.0, 1.0)
-    // context.clear(gl.COLOR_BUFFER_BIT)
-    context.fillText(text, 0, txtCanvas.height / 2);
+        context.textAlign = "left";
+        context.textBaseline = "middle";
+        context.fillStyle = config.color;
+        context.font = SIZE + "pt Helvetica";
+        // context.clearColor(1.0, 1.0, 0.0, 1.0)
+        // context.clear(gl.COLOR_BUFFER_BIT)
+        context.fillText(text, 0, txtCanvas.height / 2);
+    }
 
     var tex = new THREE.Texture(txtCanvas);
     tex.minFilter = THREE.LinearFilter
@@ -748,17 +746,17 @@ function setText(mesh: any, text: string, parConfig?: Object) {
 // }
 
 
-function setX1(mesh: THREE.Line, v) {
-    mesh.geometry.vertices[0].x = v
+export function setX1(mesh: THREE.Mesh, v: any) {
+    (mesh.geometry as THREE.Geometry).vertices[0].x = v
 }
-function setY1(mesh: THREE.Line, v) {
-    mesh.geometry.vertices[0].y = v
+export function setY1(mesh: THREE.Mesh, v: any) {
+    (mesh.geometry as THREE.Geometry).vertices[0].y = v
 }
-function setX2(mesh: THREE.Line, v) {
-    mesh.geometry.vertices[1].x = v
+export function setX2(mesh: THREE.Mesh, v: any) {
+    (mesh.geometry as THREE.Geometry).vertices[1].x = v
 }
-function setY2(mesh: THREE.Line, v) {
-    mesh.geometry.vertices[1].y = v
+export function setY2(mesh: THREE.Mesh, v: any) {
+    (mesh.geometry as THREE.Geometry).vertices[1].y = v
 }
 
 
@@ -776,7 +774,7 @@ function setY2(mesh: THREE.Line, v) {
 
 // }
 
-function createG(dataElements: any[], scene: THREE.Scene) {
+export function createG(dataElements: any[], scene: THREE.Scene) {
     var visualElements = []
     // create group element for every data element
     for (var i = 0; i < dataElements.length; i++) {
@@ -784,16 +782,17 @@ function createG(dataElements: any[], scene: THREE.Scene) {
     }
     return visualElements;
 }
-class GroupElement {
+
+export class GroupElement {
     position = { x: 0, y: 0, z: 0 };
     children: Object = [];
 }
 
-function createCirclesNoShader(dataElements: any[], scene: THREE.Scene) {
-    var material;
-    var geometry;
-    var visualElements = []
-    var c;
+export function createCirclesNoShader(dataElements: any[], scene: THREE.Scene) {
+    var material: any;
+    var geometry: any;
+    var visualElements: any[] = []
+    var c: any;
     for (var i = 0; i < dataElements.length; i++) {
         material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true });
         geometry = new THREE.CircleGeometry(1, 10);
@@ -823,17 +822,17 @@ var fragmentShaderProgram = "\
             gl_FragColor = vec4(vColor[0], vColor[1], vColor[2], vColor[3]);\
         }";
 
-function createCirclesWithBuffers(query: WebGLElementQuery, scene: THREE.Scene) {
-    var dataElements = query.dataElements;
+export function createCirclesWithBuffers(query: WebGLElementQuery, scene: THREE.Scene) {
+    var dataElements: Object[] = query.dataElements;
     query.IS_SHADER = true;
-    var attributes = {
+    var attributes: any = {
         customColor: { type: 'c', value: [] }
     }
     var shaderMaterial: THREE.ShaderMaterial = new THREE.ShaderMaterial({
-        attributes: attributes,
+        // attributes: attributes, // attributes doesn't exists
         vertexShader: vertexShaderProgram,
         fragmentShader: fragmentShaderProgram,
-        linewidth: 2
+        lineWidth: 2 // linewidth to lineWidth
     });
     shaderMaterial.blending = THREE.NormalBlending;
     shaderMaterial.depthTest = true;
@@ -841,11 +840,11 @@ function createCirclesWithBuffers(query: WebGLElementQuery, scene: THREE.Scene) 
     shaderMaterial.side = THREE.DoubleSide;
 
 
-    var visualElements = []
-    var c;
-    var vertexPositionBuffer = []
-    var vertexColorBuffer = []
-    var geometry = new THREE.BufferGeometry();
+    var visualElements: any[] = []
+    var c: any;
+    var vertexPositionBuffer: any[] = []
+    var vertexColorBuffer: any[] = []
+    var geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
     // geometry.vertices.push(new THREE.Vector3(10, -10,0))
     addBufferedRect([], 0, 0, 0, 10, 10, [], [0, 0, 1, .5])
 
@@ -966,11 +965,11 @@ function createCirclesWithBuffers(query: WebGLElementQuery, scene: THREE.Scene) 
 //     return visualElements;
 // }
 
-function createRectangles(dataElements: any[], scene: THREE.Scene) {
-    var material;
-    var geometry;
-    var visualElements = []
-    var c;
+export function createRectangles(dataElements: any[], scene: THREE.Scene) {
+    var material: any;
+    var geometry: any;
+    var visualElements: any[] = []
+    var c: any;
     for (var i = 0; i < dataElements.length; i++) {
         var rectShape = new THREE.Shape();
         rectShape.moveTo(0, 0);
@@ -994,18 +993,18 @@ function createRectangles(dataElements: any[], scene: THREE.Scene) {
             new THREE.Vector3(0, 0, 0)
         );
         var wireframe = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, linewidth: 1 }));
-        c['wireframe'] = wireframe;
+        (c as any)['wireframe'] = wireframe;
         wireframe.position.set(0, 0, 1.1)
         scene.add(wireframe);
     }
     return visualElements;
 }
 
-function createPaths(dataElements: any[], scene: THREE.Scene) {
-    var material;
-    var geometry;
-    var visualElements = []
-    var c, p;
+export function createPaths(dataElements: any[], scene: THREE.Scene) {
+    var material: any;
+    var geometry: any;
+    var visualElements: any[] = []
+    var c: any, p: any;
     for (var i = 0; i < dataElements.length; i++) {
         geometry = new THREE.Geometry();
         c = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, transparent: true }));
@@ -1015,11 +1014,12 @@ function createPaths(dataElements: any[], scene: THREE.Scene) {
     }
     return visualElements;
 }
-function createPolygons(dataElements: any[], scene: THREE.Scene) {
-    var material;
-    var geometry;
-    var visualElements = []
-    var c, p;
+
+export function createPolygons(dataElements: any[], scene: THREE.Scene) {
+    var material: any;
+    var geometry: any;
+    var visualElements: any[] = []
+    var c: any, p: any;
     for (var i = 0; i < dataElements.length; i++) {
         geometry = new THREE.Geometry();
         // geometry.vertices.push(
@@ -1036,11 +1036,12 @@ function createPolygons(dataElements: any[], scene: THREE.Scene) {
     }
     return visualElements;
 }
-function createLines(dataElements: any[], scene: THREE.Scene) {
-    var material;
-    var geometry;
-    var visualElements = []
-    var c, p;
+
+export function createLines(dataElements: any[], scene: THREE.Scene) {
+    var material: any;
+    var geometry: any;
+    var visualElements: any[] = []
+    var c: any, p: any;
     for (var i = 0; i < dataElements.length; i++) {
         geometry = new THREE.Geometry();
         geometry.vertices.push(
@@ -1053,9 +1054,10 @@ function createLines(dataElements: any[], scene: THREE.Scene) {
     }
     return visualElements;
 }
-function createWebGLText(dataElements: any[], scene: THREE.Scene) {
+
+export function createWebGLText(dataElements: any[], scene: THREE.Scene) {
     var visualElements = []
-    var mesh;
+    var mesh: any;
     for (var i = 0; i < dataElements.length; i++) {
         mesh = new THREE.Mesh(new THREE.PlaneGeometry(1000, 100), new THREE.MeshBasicMaterial());
         mesh.doubleSided = true;
@@ -1065,15 +1067,15 @@ function createWebGLText(dataElements: any[], scene: THREE.Scene) {
     return visualElements;
 }
 
-function createPath(mesh: THREE.Line, points: Object[]) {
-    mesh.geometry.vertices = []
+export function createPath(mesh: THREE.Mesh, points: any[]) {
+    (mesh.geometry as THREE.Geometry).vertices = []
     for (var i = 0; i < points.length; i++) {
-        mesh.geometry.vertices.push(new THREE.Vector3(points[i].x, points[i].y, 0));
+        (mesh.geometry as THREE.Geometry).vertices.push(new THREE.Vector3(points[i].x, points[i].y, 0));
     }
-    mesh.geometry.verticesNeedUpdate = true;
+    (mesh.geometry as THREE.Geometry).verticesNeedUpdate = true;
 }
 
-function createPolygon(mesh: THREE.Mesh, points: Object[]) {
+export function createPolygon(mesh: THREE.Mesh, points: THREE.Vector2[]) {
     var vectors = []
     var shape = new THREE.Shape(points);
     mesh.geometry = new THREE.ShapeGeometry(shape);
@@ -1089,25 +1091,25 @@ function createPolygon(mesh: THREE.Mesh, points: Object[]) {
 
 
 export class WebGLInteractor {
-    scene;
-    canvas;
-    camera
-    raycaster;
-    mouse = [];
-    mouseStart = []
+    scene: any;
+    canvas: any;
+    camera: any;
+    raycaster: any;
+    mouse: any[] = [];
+    mouseStart: any[] = []
     mouseDown: boolean = false;
-    cameraStart = []
-    panOffset = []
-    lastIntersectedSelections = []
-    lastIntersectedElements = []
-    isPanEnabled = true;
-    isHorizontalPanEnabled = true;
+    cameraStart: any[] = []
+    panOffset: any[] = []
+    lastIntersectedSelections: any[] = []
+    lastIntersectedElements: any[] = []
+    isPanEnabled: boolean = true;
+    isHorizontalPanEnabled: boolean = true;
 
-    isLassoEnabled = true;
-    lassoPoints = []
-    lassoStartHandler: Function;
-    lassoMoveHandler: Function;
-    lassoEndHandler: Function;
+    isLassoEnabled: boolean = true;
+    lassoPoints: any[] = []
+    lassoStartHandler: any; // BEFORE Function;
+    lassoMoveHandler: any; // BEFORE Function;
+    lassoEndHandler: any; // BEFORE Function;
 
     mouseOverSelections: WebGLElementQuery[] = []
     mouseMoveSelections: WebGLElementQuery[] = []
@@ -1165,7 +1167,7 @@ export class WebGLInteractor {
 
 
     // Event handlers
-    mouseMoveHandler(e) {
+    mouseMoveHandler(e: any) {
         this.mouse = mouseToWorldCoordinates(e.clientX, e.clientY)
 
         if (this.isLassoEnabled && e.which == 2) {
@@ -1228,7 +1230,7 @@ export class WebGLInteractor {
 
 
     }
-    clickHandler(e) {
+    clickHandler(e: any) {
         this.mouse = mouseToWorldCoordinates(e.clientX, e.clientY)
 
         var intersectedVisualElements: any[] = []
@@ -1243,7 +1245,7 @@ export class WebGLInteractor {
         this.mouseDown = false;
     }
 
-    mouseDownHandler(e) {
+    mouseDownHandler(e: any) {
         this.mouse = mouseToWorldCoordinates(e.clientX, e.clientY)
         this.mouseStart = [e.clientX, e.clientY]
         this.cameraStart = [webgl.camera.position.x, webgl.camera.position.y];
@@ -1261,7 +1263,7 @@ export class WebGLInteractor {
             this.lassoStartHandler(this.lassoPoints);
         }
     }
-    mouseUpHandler(e) {
+    mouseUpHandler(e: any) {
         this.mouse = mouseToWorldCoordinates(e.clientX, e.clientY)
         var intersectedVisualElements: any[] = []
         for (var i = 0; i < this.mouseUpSelections.length; i++) {
@@ -1288,7 +1290,7 @@ export class WebGLInteractor {
 
 
 
-    intersect(selection: WebGLElementQuery, mousex, mousey): any[] {
+    intersect(selection: WebGLElementQuery, mousex?: any, mousey?: any): any[] {
         switch (selection.shape) {
             case 'circle': return this.intersectCircles(selection); break;
             case 'rect': return this.intersectRects(selection); break;
@@ -1356,13 +1358,13 @@ export class WebGLInteractor {
 
         return intersectedElements;
 
-        function sqr(x) {
+        function sqr(x: number) {
             return x * x
         }
-        function dist2(v, w) {
+        function dist2(v: any, w: any) {
             return sqr(v.x - w.x) + sqr(v.y - w.y)
         }
-        function distToSegmentSquared(p, v, w) {
+        function distToSegmentSquared(p: any, v: any, w: any) {
             var l2 = dist2(v, w);
 
             if (l2 == 0) return dist2(p, v);
@@ -1375,7 +1377,7 @@ export class WebGLInteractor {
             return dist2(p, { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) });
         }
 
-        function distToSegment(p, v, w) {
+        function distToSegment(p: any, v: any, w: any) {
             return Math.sqrt(distToSegmentSquared(p, v, w));
         }
     }
@@ -1384,7 +1386,7 @@ export class WebGLInteractor {
 }
 
 // Calculate intersection
-export function mouseToWorldCoordinates(mouseX, mouseY) {
+export function mouseToWorldCoordinates(mouseX: any, mouseY: any) {
     var rect = webgl.canvas.getBoundingClientRect();
     var x = webgl.camera.position.x + webgl.camera.left / webgl.camera.zoom + (mouseX - rect.left) / webgl.camera.zoom;
     var y = webgl.camera.position.y + webgl.camera.top / webgl.camera.zoom - (mouseY - rect.top) / webgl.camera.zoom;            // this.mouse[1] *= -1
@@ -1394,7 +1396,7 @@ export function mouseToWorldCoordinates(mouseX, mouseY) {
 
 
 export function curve(points: any[]): any[] {
-    var arrayPoints = []
+    var arrayPoints: any[] = []
     for (var i = 0; i < points.length; i++) {
         if (!isNaN(points[i].x))
             arrayPoints.push([points[i].x, points[i].y])
@@ -1417,10 +1419,10 @@ export function curve(points: any[]): any[] {
 ///////////////////
 
 export class CheckBox {
-    selected = false;
-    changeCallBack: Function;
-    circle;
-    frame;
+    selected: boolean = false;
+    changeCallBack: any; // BEFORE Function;
+    circle: any;
+    frame: any;
 
     constructor() {
         this.frame = selectAll()
@@ -1436,15 +1438,15 @@ export class CheckBox {
                     this.changeCallBack();
             })
         this.circle = selectAll()
-            .data([0])
+            .data([0]);
         // .append('circle')
         //     .attr('r', 3)
         //     .attr('z', 1)
         //     .style('fill', '#000000')
-        //     .style('opacity', 0)
+        //     .style('opacity', 0);
     }
 
-    attr(attrName: string, value: any): glutils.CheckBox {
+    attr(attrName: string, value: any) {
         switch (attrName) {
             case 'x':
                 this.frame.attr('x', value);
@@ -1470,8 +1472,162 @@ export class CheckBox {
 
 
 
+export class THREEx {
+    canvas: any;
+    context: any;
+    texture: any;
 
-var THREEx = THREEx || {}
+    /**
+     * create a dynamic texture with a underlying canvas
+     * 
+     * @param {Number} width  width of the canvas
+     * @param {Number} height height of the canvas
+    */
+    constructor(width: number, height: number) {
+        var canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        this.canvas = canvas
+
+        var context = canvas.getContext('2d')
+        this.context = context
+
+        var texture = new THREE.Texture(canvas)
+        this.texture = texture
+    }
+
+
+    /**
+     * clear the canvas
+     * 
+     * @param  {String*} fillStyle 		the fillStyle to clear with, if not provided, fallback on .clearRect
+     * @return {THREEx.DynamicTexture}      the object itself, for chained texture
+     */
+
+    clear(fillStyle?: any) {
+        // depends on fillStyle
+        if (fillStyle !== undefined) {
+            this.context.fillStyle = fillStyle
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        } else {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        }
+        // make the texture as .needsUpdate
+        this.texture.needsUpdate = true;
+        // for chained API 
+        return this;
+    }
+
+
+    /**
+     * draw text
+     * 
+     * @param  {String}		text	the text to display
+     * @param  {Number|undefined}	x	if provided, it is the x where to draw, if not, the text is centered
+     * @param  {Number}		y	the y where to draw the text
+     * @param  {String*} 		fillStyle the fillStyle to clear with, if not provided, fallback on .clearRect
+     * @param  {String*} 		contextFont the font to use
+     * @return {THREEx.DynamicTexture}	the object itself, for chained texture
+     */
+
+    drawText(text: string, x: number | undefined, y: number, fillStyle?: string, contextFont?: string) {
+        // set font if needed
+        if (contextFont !== undefined) this.context.font = contextFont;
+        // if x isnt provided 
+        if (x === undefined || x === null) {
+            var textSize = this.context.measureText(text);
+            x = (this.canvas.width - textSize.width) / 2;
+        }
+        // actually draw the text
+        this.context.fillStyle = fillStyle;
+        this.context.fillText(text, x, y);
+        // make the texture as .needsUpdate
+        this.texture.needsUpdate = true;
+        // for chained API 
+        return this;
+    };
+
+    drawTextCooked(text: string, options: any) {
+        var context = this.context
+        var canvas = this.canvas
+        options = options || {}
+        var params = {
+            margin: options.margin !== undefined ? options.margin : 0.1,
+            lineHeight: options.lineHeight !== undefined ? options.lineHeight : 0.1,
+            align: options.align !== undefined ? options.align : 'left',
+            fillStyle: options.fillStyle !== undefined ? options.fillStyle : 'black',
+        }
+        context.save()
+        context.fillStyle = params.fillStyle;
+
+        var y = (params.lineHeight + params.margin) * canvas.height
+        while (text.length > 0) {
+            // compute the text for specifically this line
+            var maxText = computeMaxTextLength(text)
+            // update the remaining text
+            text = text.substr(maxText.length)
+
+            // compute x based on params.align
+            var textSize = context.measureText(maxText);
+
+            // new variable to recognize if x exists or not
+            var computeX: boolean = true;
+            var x: number = 0;
+            if (params.align === 'left') {
+                x = params.margin * canvas.width
+            } else if (params.align === 'right') {
+                x = (1 - params.margin) * canvas.width - textSize.width
+            } else if (params.align === 'center') {
+                x = (canvas.width - textSize.width) / 2;
+            } else {
+                computeX = false;
+                console.assert(false)
+            }
+
+            if (computeX) {
+                // actually draw the text at the proper position
+                this.context.fillText(maxText, x, y);
+            }
+
+            // goto the next line
+            y += params.lineHeight * canvas.height
+        }
+        context.restore()
+
+        // make the texture as .needsUpdate
+        this.texture.needsUpdate = true;
+        // for chained API
+        return this;
+
+        function computeMaxTextLength(text: string) {
+            var maxText = ''
+            var maxWidth = (1 - params.margin * 2) * canvas.width
+            while (maxText.length !== text.length) {
+                var textSize = context.measureText(maxText);
+                if (textSize.width > maxWidth) break;
+                maxText += text.substr(maxText.length, 1)
+            }
+            return maxText
+        }
+    }
+
+    /**
+     * execute the drawImage on the internal context
+     * the arguments are the same the official context2d.drawImage
+     */
+    drawImage(/* same params as context2d.drawImage */) {
+        // call the drawImage
+        this.context.drawImage.apply(this.context, arguments)
+        // make the texture as .needsUpdate
+        this.texture.needsUpdate = true;
+        // for chained API 
+        return this;
+    }
+
+}
+
+/*
+var THREEx: any = THREEx || {}
 
 //////////////////////////////////////////////////////////////////////////////////
 //		Constructor							//
@@ -1483,7 +1639,8 @@ var THREEx = THREEx || {}
  * @param {Number} width  width of the canvas
  * @param {Number} height height of the canvas
  */
-THREEx.DynamicTexture = function (width, height) {
+/*
+THREEx.DynamicTexture = function (width: number, height: number) {
     var canvas = document.createElement('canvas')
     canvas.width = width
     canvas.height = height
@@ -1506,7 +1663,8 @@ THREEx.DynamicTexture = function (width, height) {
  * @param  {String*} fillStyle 		the fillStyle to clear with, if not provided, fallback on .clearRect
  * @return {THREEx.DynamicTexture}      the object itself, for chained texture
  */
-THREEx.DynamicTexture.prototype.clear = function (fillStyle) {
+/*
+THREEx.DynamicTexture.prototype.clear = function (fillStyle: any) {
     // depends on fillStyle
     if (fillStyle !== undefined) {
         this.context.fillStyle = fillStyle
@@ -1530,6 +1688,7 @@ THREEx.DynamicTexture.prototype.clear = function (fillStyle) {
  * @param  {String*} 		contextFont the font to use
  * @return {THREEx.DynamicTexture}	the object itself, for chained texture
  */
+/*
 THREEx.DynamicTexture.prototype.drawText = function (text, x, y, fillStyle, contextFont) {
     // set font if needed
     if (contextFont !== undefined) this.context.font = contextFont;
@@ -1607,7 +1766,8 @@ THREEx.DynamicTexture.prototype.drawTextCooked = function (text, options) {
  * execute the drawImage on the internal context
  * the arguments are the same the official context2d.drawImage
  */
-THREEx.DynamicTexture.prototype.drawImage = function (/* same params as context2d.drawImage */) {
+/*
+THREEx.DynamicTexture.prototype.drawImage = function () {
     // call the drawImage
     this.context.drawImage.apply(this.context, arguments)
     // make the texture as .needsUpdate
@@ -1615,32 +1775,32 @@ THREEx.DynamicTexture.prototype.drawImage = function (/* same params as context2
     // for chained API 
     return this;
 }
-
-
+*/
 
 
 
 //////////////////
 /// VECTOR OPS ///
 //////////////////
-module geometry {
 
-    export function length(v1) {
-        return Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1]);
-    }
+//module geometry {
 
-    export function normalize(v: number[]) {
-        var l = length(v)
-        return [v[0] / l, v[1] / l]
-    }
-
-    export function setLength(v: number[], l: number) {
-        var len = length(v)
-        return [l * v[0] / len, l * v[1] / len]
-    }
-
-
+export function length(v1: any[]) {
+    return Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1]);
 }
+
+export function normalize(v: number[]) {
+    var l = length(v)
+    return [v[0] / l, v[1] / l]
+}
+
+export function setLength(v: number[], l: number) {
+    var len = length(v)
+    return [l * v[0] / len, l * v[1] / len]
+}
+
+
+//}
 
 
 
