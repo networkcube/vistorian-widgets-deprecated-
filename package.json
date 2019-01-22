@@ -6,6 +6,7 @@
     "types": "lib/index.d.js",
     "scripts": {
         "build": "tsc --pretty false",
+        "lint": "tslint -p . -e 'package.json'",
         "clean": "rimraf lib"
     },
     "author": "Benjamin Bach <benj.bach@gmail.com>",
@@ -13,11 +14,12 @@
     "devDependencies": {
         "@types/jquery": "^3.3.29",
         "rimraf": "^2.6.3",
-        "typescript": "^3.2"
+        "typescript": "^3.2",
+        "tslint": "^5.12.1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/networkcube/networkcube-vis.git"
+        "url": "git+https://github.com/networkcube/vistorian-widgets.git"
     },
     "collaborators": [
         "Jean-Daniel Fekete <Jean-Daniel.Fekete@inria.fr",
@@ -27,9 +29,8 @@
     "dependencies": {
         "@types/d3": "^5.7.0",
         "@types/three": "^0.93.15",
-        "d3": "^5.7.0",
-        "jquery": "^3.3.1",
         "moment": "^2.23.0",
+        "d3": "^5.7.0",
         "three": "^0.100.0",
         "vistorian-core": "file:../vistorian-core"
     }
