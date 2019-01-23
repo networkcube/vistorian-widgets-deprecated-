@@ -2,15 +2,12 @@ import * as queries from "queries";
 import * as dynamicgraph from "dynamicgraph";
 import * as messenger from "messenger";
 
-import { Slider } from './slider'
+// import { Slider } from './slider'
 
 import { SmartSlider } from './smartslider'
 
 import {
-    makeSlider,
-    RadioButton,
-    makeCheckBox,
-    makeButton
+    RadioButton
 } from './ui'
 
 import * as d3 from 'd3'

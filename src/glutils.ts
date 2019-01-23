@@ -1,7 +1,6 @@
-import * as THREE from 'three'
-import $ from 'jquery'
-import { BSpline } from './BSpline'
-import { Vector2 } from 'three';
+import * as THREE from 'three';
+import $ from 'jquery';
+import { BSpline } from './BSpline';
 
 //module glutils {
 
