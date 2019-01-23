@@ -1,6 +1,6 @@
 /// <reference types="vistorian-core" />
 
-import { LegendElement} from 'dynamicgraph';
+import { LegendElement } from 'dynamicgraph';
 
 import * as d3 from 'd3'
 

@@ -6,47 +6,8 @@ import * as utils from "utils";
 
 import * as d3 from 'd3';
 import {
-    makeAlphaBuffer,
-    addBufferedHatchedRect,
-    addBufferedRect,
-    addBufferedCirlce,
-    addBufferedDiamond,
-    createRectFrame,
-    createDiagonalCross,
-    makeBuffer3f,
-    makeBuffer4f,
-    updateBuffer,
-    createText,
-    getMousePos,
     WebGL,
-    initWebGL,
-    setWebGL,
-    selectAll,
-    WebGLElementQuery,
-    setStyle,
-    setText,
-    setX1,
-    setY1,
-    setX2,
-    setY2,
-    createG,
-    GroupElement,
-    createCirclesNoShader,
-    createCirclesWithBuffers,
-    createRectangles,
-    createPaths,
-    createPolygons,
-    createLines,
-    createWebGLText,
-    createPath,
-    createPolygon,
-    WebGLInteractor,
-    mouseToWorldCoordinates,
-    curve,
-    CheckBox,
-    length,
-    normalize,
-    setLength
+    WebGLElementQuery
 } from './glutils';
 
 export class Timeline {
