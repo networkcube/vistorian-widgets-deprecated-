@@ -1,6 +1,6 @@
-/// <reference types="vistorian-core" />
+// <reference path="../node_modules/vistorian-core/build/src/index.d.ts" />
 
-import { LegendElement } from 'dynamicgraph';
+import { LegendElement } from 'vistorian-core/src/dynamicgraph';
 
 import * as d3 from 'd3'
 

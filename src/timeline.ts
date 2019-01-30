@@ -1,8 +1,8 @@
-/// <reference types="vistorian-core" />
+// <reference types="vistorian-core" />
 
-import * as dynamicgraph from "dynamicgraph";
+import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as moment from "moment";
-import * as utils from "utils";
+import * as utils from "vistorian-core/src/utils";
 
 import * as d3 from 'd3';
 import {

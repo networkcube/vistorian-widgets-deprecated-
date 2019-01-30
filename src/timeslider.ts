@@ -1,6 +1,6 @@
-import * as queries from "queries";
-import * as dynamicgraph from "dynamicgraph";
-import * as messenger from "messenger";
+import * as queries from "vistorian-core/src/queries";
+import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
+import * as messenger from "vistorian-core/src/messenger";
 
 // import { Slider } from './slider'
 
