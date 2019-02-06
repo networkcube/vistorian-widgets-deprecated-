@@ -63,9 +63,11 @@ export class RangeSlider {
 
     appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
 
+        console.log("RANGESLIDER");
+        console.log(svg);
         this.svg = svg;
 
-        this.rect = this.svg[0][0].getBoundingClientRect();
+        this.rect = this.svg['_groups'][0][0].getBoundingClientRect();
 
         this.valueRange = d3.scaleLinear()
             .domain([0, this.width])
@@ -74,7 +76,7 @@ export class RangeSlider {
 
         this.drag = d3.drag()
             .subject(Object)
-            .on("dragstart", () => { this.dragStart() })
+            .on("start", () => { console.log("ACAA"); this.dragStart() })
             .on("drag", () => { this.dragMove() });
 
         this.svg = svg;

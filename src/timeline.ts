@@ -34,10 +34,10 @@ export class Timeline {
     highlightPointer: any;
     highlightLabel: any;
 
-    minGran: number = Number.MIN_VALUE; // INIT
-    maxGran: number = Number.MAX_VALUE; // INIT
+    minGran: number; // INIT
+    maxGran: number; // INIT
 
-    granules: moment.unitOfTime.Base[] = [];
+    granules: moment.unitOfTime.Base[];
 
     tickmarks: WebGLElementQuery = new WebGLElementQuery(); // INIT
     timeLabels: WebGLElementQuery = new WebGLElementQuery(); // INIT
@@ -57,22 +57,26 @@ export class Timeline {
         this.HEIGHT = height;
         this.webgl = webgl;
         this.network = network;
+        this.granules = dynamicgraph.GRANULARITY;
+        this.minGran = this.network.getMinGranularity();
+        this.maxGran = this.granules.length - 1;
         this.visualize();
     }
 
     timeGranularities: any;
     visualize() {
 
-
-        this.granules = dynamicgraph.GRANULARITY;
+        /* MOVE TO CONSTRUCTOR */
+        // this.granules = dynamicgraph.GRANULARITY;
         var times = this.network.times().toArray();
-        this.minGran = this.network.getMinGranularity();
-        // this.maxGran = this.network.getMaxGranularity();
-        this.maxGran = this.granules.length - 1
+        // this.minGran = this.network.getMinGranularity();
+        // this.maxGran = this.granules.length - 1;
 
         // create non-indexed times
-        var unix_start = times[0].unixTime();
-        var unix_end = times[times.length - 1].unixTime();
+        // IF UNDEFINED??
+        var unix_start = times[0] ? times[0].unixTime() : 0;
+        var unix_end = times[times.length - 1] ? times[times.length - 1].unixTime() : 0;
+
         var start = moment.utc(unix_start + '', 'x').startOf(this.granules[this.minGran]);
         var end = moment.utc(unix_end + '', 'x').startOf(this.granules[this.minGran]);
         var numTimes = Math.ceil(Math.abs(start.diff(end, this.granules[this.minGran]))); // WITHOUT 's'
@@ -219,7 +223,7 @@ export class Timeline {
         console.log('ticksFitting', ticksFitting)
         var minTime = this.timeObjects[this.minTimeId];
         var maxTime = this.timeObjects[this.maxTimeId];
-        var requiredTicks: number
+        var requiredTicks: number = Number.MAX_VALUE; // INIT?
         var t1: any, t2: any;
         this.tick_minGran_visible = undefined;
         for (var g = this.minGran; g < this.maxGran && this.tick_minGran_visible == undefined; g++) {
@@ -233,7 +237,7 @@ export class Timeline {
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 10
                 if (g == 9)
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 100
-                else // BEFORE if (g == 10)
+                if (g == 10)
                     requiredTicks = moment.duration(t2.diff(t1)).as(this.granules[7]) / 1000
             }
 

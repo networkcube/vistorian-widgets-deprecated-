@@ -43,7 +43,7 @@ export class RadioButton {
 
     constructor(color: string, text?: string) {
         this.color = color;
-        if(text)
+        if (text)
             this.text = text;
     }
 

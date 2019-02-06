@@ -48,7 +48,7 @@ export class Slider {
 
         this.svg = svg;
 
-        this.rect = (this.svg as any)[0][0].getBoundingClientRect();
+        this.rect = (this.svg as any)['_groups'][0][0].getBoundingClientRect();
 
         this.valueRange = d3.scaleLinear()
             .domain([0, this.width])
@@ -56,8 +56,8 @@ export class Slider {
 
 
         this.drag = d3.drag()
-            .subject(Object)
-            .on("dragstart", () => { this.dragStart() })
+            //.subject(Object)
+            .on("start", () => { console.log("ACAAA"); this.dragStart() })
             .on("drag", () => { this.dragMove() })
 
         this.svg = svg;
@@ -74,6 +74,7 @@ export class Slider {
             .attr("y2", this.TOP)
             .style("stroke", "#aaa")
 
+//        console.log('APPENDTO');
         this.knob = this.g.append("circle")
             .attr("id", "#sliderKnob")
             .attr("r", this.RADIUS_HANDLE)
@@ -81,6 +82,7 @@ export class Slider {
             .attr("cy", this.TOP)
             .attr("fill", "#777")
             .call(this.drag);
+//        console.log('FINISH');
     }
 
     dragStartXMouse: any;
@@ -88,11 +90,13 @@ export class Slider {
     dragObj: any;
     currentBarLength: any;
     dragStart() {
+        console.log("START")
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
         this.dragObj = d3.event.sourceEvent.target
     }
 
     dragMove() {
+        console.log("DRAGGGG");
         d3.select(this.dragObj).attr("cx", Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX())));
         this.dragEnd()
     }

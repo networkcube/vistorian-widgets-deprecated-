@@ -5,7 +5,15 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
     input: 'build/src/index.js',
-    external: ['d3', 'moment', 'three'],
+    external: [
+        'd3',
+        'moment',
+        'three',
+        'vistorian-core/src/dynamicgraph',
+        'vistorian-core/src/utils',
+        'vistorian-core/src/messenger',
+        'jquery'
+    ],
     output: {
         file: 'lib/vistorian-widgets.js',
         format: 'umd',
@@ -14,7 +22,11 @@ export default {
         globals: {
             'd3': 'd3',
             'moment': 'moment',
-            'three': 'three'
+            'three': 'three',
+            'vistorian-core/src/dynamicgraph': 'dynamicgraph',
+            'vistorian-core/src/utils': 'utils',
+            'vistorian-core/src/messenger': 'messenger',
+            'jquery': '$'
         }
     },
     plugins: [

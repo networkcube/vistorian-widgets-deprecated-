@@ -345,6 +345,7 @@ export function setWebGL(scene: THREE.Scene, camera: THREE.OrthographicCamera, r
 /// SELECTIONS in the style of D3
 
 export function selectAll(): WebGLElementQuery {
+    console.log("AQUIII");
     var q: WebGLElementQuery = new WebGLElementQuery();
     webgl.elementQueries.push(q)
     return q;
@@ -384,6 +385,8 @@ export class WebGLElementQuery {
     IS_SHADER: boolean = false
 
     constructor() {
+        console.log("NEW WEBGLELEMENT");
+        console.log(webgl);
         this.scene = webgl.scene;
     }
 
@@ -445,6 +448,7 @@ export class WebGLElementQuery {
                 visArr.push(this.visualElements[i])
             }
         }
+        console.log("ACAAAA");
         var q: WebGLElementQuery = new WebGLElementQuery().data(arr);
         q.visualElements = visArr;
         return q;

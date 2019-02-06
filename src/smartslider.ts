@@ -69,7 +69,7 @@ export class SmartSlider {
 
         this.svg = svg;
 
-        this.rect = this.svg[0][0].getBoundingClientRect();
+        this.rect = this.svg['_groups'][0][0].getBoundingClientRect();
 
         this.valueRange = d3.scaleLinear()
             .domain([0, this.width])
@@ -78,7 +78,7 @@ export class SmartSlider {
 
         this.drag = d3.drag()
             .subject(Object)
-            .on("dragstart", () => { this.dragStart() })
+            .on("start", () => { this.dragStart() })
             .on("drag", () => { this.dragMove() });
 
         this.svg = svg;

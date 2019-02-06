@@ -1,4 +1,3 @@
-import * as queries from "vistorian-core/src/queries";
 import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as messenger from "vistorian-core/src/messenger";
 
@@ -11,7 +10,7 @@ import {
 } from './ui'
 
 import * as d3 from 'd3'
-import * as moment from 'moment'
+import * as m from 'moment'
 
 export class TimeSlider {
 
@@ -30,7 +29,7 @@ export class TimeSlider {
 
     dgraph: dynamicgraph.DynamicGraph;
     slider: SmartSlider;
-    times: queries.Time[];
+    times: dynamicgraph.Time[];
     sliderWidth: number;
     widgetWidth: number;
     callBack: Function | undefined = undefined;
@@ -50,10 +49,11 @@ export class TimeSlider {
         this.times = dgraph.times().toArray();
         this.widgetWidth = width;
 
+        var timesDummy = new dynamicgraph.Time(0, this.dgraph);
         this.sliderWidth = width - this.MARGIN_SLIDER_RIGHT + 5 - this.MARGIN_SLIDER_LEFT - 5;
-        var lastDummyYear: moment.Moment = this.times[this.times.length - 1].moment();
+        var lastDummyYear: m.Moment = this.times.length != 0 ? this.times[this.times.length - 1].moment() : timesDummy.moment(); // WHAT HAPPEND??
         var minGran: number = dgraph.gran_min;
-        var minGranName: moment.unitOfTime.DurationConstructor = 'milliseconds';
+        var minGranName: m.unitOfTime.DurationConstructor = 'milliseconds';
         switch (minGran) {
             case 1: minGranName = 'milliseconds'; break;
             case 2: minGranName = 'seconds'; break;
@@ -68,14 +68,19 @@ export class TimeSlider {
             // case 10: minGranName = 'millenia'; break;
         }
         console.log('minGran', minGranName);
-        
+
+        if (!lastDummyYear) {
+            lastDummyYear = m.unix(0);
+        }
+
         lastDummyYear.add(1, minGranName);
 
         // console.log('unixTime', this.times[this.times.length - 1].unixTime())
         console.log('unixTime', lastDummyYear.valueOf());
         console.log('unixTime', lastDummyYear.valueOf());
         // this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, this.times[0].unixTime(), this.times[this.times.length - 1].unixTime(), 1);
-        this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, this.times[0].unixTime(), lastDummyYear.valueOf(), 1);
+        let unixTimeSlider = this.times.length != 0 ? this.times[0].unixTime() : 0; // IS IT OK?? 
+        this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, unixTimeSlider, lastDummyYear.valueOf(), 1);
 
         if (callBack)
             this.callBack = callBack
@@ -84,10 +89,8 @@ export class TimeSlider {
             .range([this.MARGIN_SLIDER_LEFT, this.MARGIN_SLIDER_LEFT + this.sliderWidth])
             // .domain([new Date(dgraph.time(0).unixTime()), new Date(dgraph.times().last().unixTime())]);
             // BEFORE .domain([dgraph.time(0).unixTime(), lastDummyYear.valueOf()])
-            .domain([this.times[0].unixTime(), lastDummyYear.valueOf()]);
+            .domain([unixTimeSlider, lastDummyYear.valueOf()]);
 
-        // var sdf = new Date(lastDummyYear.unix())
-        // console.log('year: ', sdf.getYear())
 
         this.tickHeightFunction = d3.scaleLinear()
             .range([4, this.SLIDER_TOP - 10])
@@ -105,7 +108,7 @@ export class TimeSlider {
         g.append("g")
             .attr('transform', 'translate(0,' + this.SLIDER_TOP + ')')
             .attr("class", "x axis")
-//            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
+            //            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
             .call(d3.axisTop(this.tickScale));
 
         this.labelStart = g.append('text')
@@ -146,8 +149,8 @@ export class TimeSlider {
     }
 
 
-    drawTickmarks(granularity: number, tickTimes: queries.Time[], svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
-        var time: queries.Time;
+    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
+        var time: dynamicgraph.Time;
         var displayLabelSpacing: number = 1; // display every label
         while (Math.floor(this.sliderWidth / this.TICK_LABEL_GAP) < (tickTimes.length / displayLabelSpacing) && displayLabelSpacing < 100) {
             displayLabelSpacing++;
@@ -180,7 +183,7 @@ export class TimeSlider {
         }
     }
 
-    formatAtGranularity(time: moment.Moment, granualarity: number) {
+    formatAtGranularity(time: m.Moment, granualarity: number) {
         switch (granualarity) {
             case 0: return time.millisecond();
             case 1: return time.second();
@@ -193,7 +196,7 @@ export class TimeSlider {
         }
     }
 
-    formatForGranularities(time: queries.Time, gran_min: number, gran_max: number) {
+    formatForGranularities(time: dynamicgraph.Time, gran_min: number, gran_max: number) {
         var formatString: string = ''
         var format: string;
         while (gran_max >= gran_min) {

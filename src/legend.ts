@@ -1,6 +1,4 @@
-// <reference path="../node_modules/vistorian-core/build/src/index.d.ts" />
-
-import { LegendElement } from 'vistorian-core/src/dynamicgraph';
+import * as dynamicgraph from 'vistorian-core/src/dynamicgraph';
 
 import * as d3 from 'd3'
 
@@ -17,7 +15,7 @@ export class Legend {
 
     height: number = 0; // INIT ???? 
 
-    constructor(data: LegendElement[], handlerFunction?: Function) {
+    constructor(data: dynamicgraph.LegendElement[], handlerFunction?: Function) {
         this.data = data;
     }
 
