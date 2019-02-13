@@ -140,13 +140,13 @@ export class Timeline {
         }
 
         // create mapping functions
-        this.position_x = d3.scaleLinear()
+        this.position_x = d3.scale.linear()
             .domain([0, this.timeGranularities.length - 1])
             .range([this.x + 1, this.x + this.WIDTH - 1]);
-        this.position_y = d3.scaleLinear()
+        this.position_y = d3.scale.linear()
             .domain([this.minGran - 1, this.maxGran])
             .range([-this.HEIGHT, 0]);
-        this.label_opacity = d3.scaleLinear()
+        this.label_opacity = d3.scale.linear()
             .domain([this.minGran - 1, this.maxGran])
             .range([.2, 1]);
 

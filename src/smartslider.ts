@@ -65,21 +65,16 @@ export class SmartSlider {
     rect: any;
     singleTimeStepX = 0;
 
-    appendTo(svg: d3.Selection<SVGGElement, {}, HTMLElement, any>) {
+    appendTo(svg: d3.Selection<any>) {
 
         this.svg = svg;
 
-        this.rect = this.svg['_groups'][0][0].getBoundingClientRect();
+        //this.rect = this.svg['_groups'][0][0].getBoundingClientRect(); // D3 V4
+        this.rect = this.svg[0][0].getBoundingClientRect();
 
-        this.valueRange = d3.scaleLinear()
+        this.valueRange = d3.scale.linear()
             .domain([0, this.width])
             .range([this.min, this.max])
-
-
-        this.drag = d3.drag()
-            .subject(Object)
-            .on("start", () => { this.dragStart() })
-            .on("drag", () => { this.dragMove() });
 
         this.svg = svg;
 
@@ -87,6 +82,12 @@ export class SmartSlider {
             .attr("height", this.HEIGHT)
             .attr("width", this.width)
             .attr("transform", "translate(" + this.x + "," + this.y + ")");
+
+        console.log("Here");
+        this.drag = d3.behavior.drag()
+            .origin(Object)
+            .on("dragstart", () => { this.dragStart() }) // only "start" in d3 v4
+            .on("drag", () => { this.dragMove() });
 
         this.g.append("line")
             .attr("x1", this.LEFT)
@@ -96,7 +97,7 @@ export class SmartSlider {
             .style("stroke", "#aaa");
 
         if (this.hasTickmarks) {
-            this.val2spaceScale = d3.scaleLinear()
+            this.val2spaceScale = d3.scale.linear()
                 .domain([this.min, this.max])
                 .range([this.LEFT, this.width - this.RIGHT - this.LEFT]);
 
@@ -166,14 +167,14 @@ export class SmartSlider {
             .attr("cy", this.TOP + this.BAR_WIDTH)
             .attr("fill", "#777")
             .call(this.drag);
-            
+
         // this.circleSingle = this.g
         //     .append('svg:path')
         //     .attr('d', 'M0,0L4,4L4,15L-4,15L-4,4L0,0')
         //     .attr('fill', '#777')
         //     .attr("id", "sliderKnobSingle")
         //     .call(this.drag);
-            
+
     }
 
     dragStartXMouse: number = 0; // BEFORE number;
@@ -183,7 +184,8 @@ export class SmartSlider {
 
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()));
-        this.dragObj = d3.event.sourceEvent.target;
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         if (this.isInverted) {
             // determine whether we are left of min, in between, or right of max
             // the startxbar is the left end of whichever segment we are in, 
@@ -220,10 +222,10 @@ export class SmartSlider {
                 || this.dragObj.id == this.bar1.attr('id'))) {
             // when inverted, dragging bars does nothing
             return;
-        } else if(this.dragObj == this.circleSingle){
+        } else if (this.dragObj == this.circleSingle) {
             // move the one time steper
             this.singleTimeStepX = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
-            d3.select(this.dragObj).attr("transform", 'translate('+this.singleTimeStepX+', 0)');
+            d3.select(this.dragObj).attr("transform", 'translate(' + this.singleTimeStepX + ', 0)');
         } else {
             d3.select(this.dragObj).attr("cx", Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX())));
             if (this.isInverted) {
@@ -232,7 +234,7 @@ export class SmartSlider {
                     .attr('width', this.circleMin.attr('cx') - this.LEFT);
                 this.bar1
                     .attr('x', this.circleMax.attr('cx'))
-                    .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                    .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
             } else {
                 this.bar0.attr('x', this.circleMin.attr('cx'))
                     .attr('width', this.circleMax.attr('cx') - this.circleMin.attr('cx'));
@@ -250,7 +252,9 @@ export class SmartSlider {
 
 
     getRelX(): number {
-        return d3.event.sourceEvent.pageX - this.LEFT - this.x - this.rect.left
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        return pageX - this.LEFT - this.x - this.rect.left;
     }
 
 
@@ -268,7 +272,7 @@ export class SmartSlider {
                 .attr('width', this.circleMin.attr('cx'));
             this.bar1
                 .attr('x', this.circleMax.attr('cx'))
-                .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
         } else {
             this.bar0
                 .attr('x', this.circleMin.attr('cx'))
@@ -284,7 +288,7 @@ export class SmartSlider {
 
         if (this.isInverted) {
             // create bar1, set positions of both
-            this.bar1 = this.g.insert('rect','#bar0')
+            this.bar1 = this.g.insert('rect', '#bar0')
                 .attr('x', this.RIGHT)
                 .attr('y', this.TOP)
                 .attr('height', this.BAR_WIDTH)

@@ -85,19 +85,19 @@ export class TimeSlider {
         if (callBack)
             this.callBack = callBack
 
-        this.tickScale = d3.scaleUtc()
+        this.tickScale = d3.time.scale.utc()
             .range([this.MARGIN_SLIDER_LEFT, this.MARGIN_SLIDER_LEFT + this.sliderWidth])
             // .domain([new Date(dgraph.time(0).unixTime()), new Date(dgraph.times().last().unixTime())]);
             // BEFORE .domain([dgraph.time(0).unixTime(), lastDummyYear.valueOf()])
             .domain([unixTimeSlider, lastDummyYear.valueOf()]);
 
 
-        this.tickHeightFunction = d3.scaleLinear()
+        this.tickHeightFunction = d3.scale.linear()
             .range([4, this.SLIDER_TOP - 10])
             .domain([dgraph.gran_min, dgraph.gran_max]);
     }
 
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, x?: number, y?: number) {
+    appendTo(svg: d3.Selection<any>, x?: number, y?: number) {
 
         if (!x) x = 0
         if (!y) y = 0
@@ -108,8 +108,8 @@ export class TimeSlider {
         g.append("g")
             .attr('transform', 'translate(0,' + this.SLIDER_TOP + ')')
             .attr("class", "x axis")
-            //            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
-            .call(d3.axisTop(this.tickScale));
+            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
+            //.call(d3.axisTop(this.tickScale));
 
         this.labelStart = g.append('text')
             .attr('y', this.SLIDER_TOP + 20)
@@ -149,7 +149,7 @@ export class TimeSlider {
     }
 
 
-    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
+    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: d3.Selection<any>) {
         var time: dynamicgraph.Time;
         var displayLabelSpacing: number = 1; // display every label
         while (Math.floor(this.sliderWidth / this.TICK_LABEL_GAP) < (tickTimes.length / displayLabelSpacing) && displayLabelSpacing < 100) {

@@ -49,7 +49,7 @@ export class RadioButton {
 
 
 
-    appendTo(x: number, y: number, svg: d3.Selection<SVGGElement, {}, HTMLElement, any>) { // ?????????????
+    appendTo(x: number, y: number, svg: d3.Selection<any>) { // ?????????????
         var g = svg.append('g')
             .attr('transform', 'translate(' + x + ',' + y + ')');
 

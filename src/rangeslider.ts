@@ -61,22 +61,23 @@ export class RangeSlider {
     circleMax: any;
     rect: any;
 
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
+    appendTo(svg: d3.Selection<any>) {
 
         console.log("RANGESLIDER");
         console.log(svg);
         this.svg = svg;
 
-        this.rect = this.svg['_groups'][0][0].getBoundingClientRect();
+        //this.rect = this.svg['_groups'][0][0].getBoundingClientRect(); // d3 v4
+        this.rect = this.svg[0][0].getBoundingClientRect();
 
-        this.valueRange = d3.scaleLinear()
+        this.valueRange = d3.scale.linear()
             .domain([0, this.width])
             .range([this.min, this.max])
 
 
-        this.drag = d3.drag()
-            .subject(Object)
-            .on("start", () => { console.log("ACAA"); this.dragStart() })
+        this.drag = d3.behavior.drag()
+            .origin(Object)
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 only "start"
             .on("drag", () => { this.dragMove() });
 
         this.svg = svg;
@@ -94,7 +95,7 @@ export class RangeSlider {
             .style("stroke", "#aaa");
 
         if (this.hasTickmarks) {
-            this.val2spaceScale = d3.scaleLinear()
+            this.val2spaceScale = d3.scale.linear()
                 .domain([this.min, this.max])
                 .range([this.LEFT, this.width - this.RIGHT - this.LEFT]);
 
@@ -173,7 +174,8 @@ export class RangeSlider {
 
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()));
-        this.dragObj = d3.event.sourceEvent.target;
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         if (this.isInverted) {
             // determine whether we are left of min, in between, or right of max
             // the startxbar is the left end of whichever segment we are in, 
@@ -236,7 +238,9 @@ export class RangeSlider {
 
 
     getRelX(): number {
-        return d3.event.sourceEvent.pageX - this.LEFT - this.x - this.rect.left
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        return pageX - this.LEFT - this.x - this.rect.left;
     }
 
 

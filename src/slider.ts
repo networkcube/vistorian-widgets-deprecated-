@@ -44,20 +44,22 @@ export class Slider {
     bar: any;
     knob: any;
     rect: any;
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>){ // ?????????????) {
+    appendTo(svg: d3.Selection<any>){ 
 
         this.svg = svg;
 
-        this.rect = (this.svg as any)['_groups'][0][0].getBoundingClientRect();
+        // this.rect = (this.svg as any)['_groups'][0][0].getBoundingClientRect(); // D3 V4
+        this.rect = (this.svg as any)[0][0].getBoundingClientRect();
 
-        this.valueRange = d3.scaleLinear()
+
+        this.valueRange = d3.scale.linear()
             .domain([0, this.width])
             .range([this.min, this.max])
 
 
-        this.drag = d3.drag()
+        this.drag = d3.behavior.drag()
             //.subject(Object)
-            .on("start", () => { console.log("ACAAA"); this.dragStart() })
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
             .on("drag", () => { this.dragMove() })
 
         this.svg = svg;
@@ -90,9 +92,9 @@ export class Slider {
     dragObj: any;
     currentBarLength: any;
     dragStart() {
-        console.log("START")
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
-        this.dragObj = d3.event.sourceEvent.target
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        this.dragObj = sourceEvent ? sourceEvent.target : undefined;
     }
 
     dragMove() {
@@ -109,7 +111,9 @@ export class Slider {
 
 
     getRelX(): number {
-        return d3.event.sourceEvent.pageX - this.LEFT - this.x - this.rect.left
+        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        return pageX - this.LEFT - this.x - this.rect.left;
     }
 
 
