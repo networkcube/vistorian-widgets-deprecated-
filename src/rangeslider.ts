@@ -77,8 +77,8 @@ export class RangeSlider {
 
         this.drag = d3.behavior.drag()
             .origin(Object)
-            .on("dragstart", () => { this.dragStart() }) // d3 v4 only "start"
-            .on("drag", () => { this.dragMove() });
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
+            .on("drag", () => { this.dragMove() })
 
         this.svg = svg;
 
@@ -166,7 +166,7 @@ export class RangeSlider {
             .attr("fill", "#777")
             .call(this.drag);
     }
-    
+
     dragStartXMouse: number = 0; // BEFORE number;
     dragStartXBar: number = 0; // BEFORE number;
     dragObj: any;
@@ -220,7 +220,7 @@ export class RangeSlider {
                     .attr('width', this.circleMin.attr('cx') - this.LEFT);
                 this.bar1
                     .attr('x', this.circleMax.attr('cx'))
-                    .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                    .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
             } else {
                 this.bar0.attr('x', this.circleMin.attr('cx'))
                     .attr('width', this.circleMax.attr('cx') - this.circleMin.attr('cx'));
@@ -258,7 +258,7 @@ export class RangeSlider {
                 .attr('width', this.circleMin.attr('cx'));
             this.bar1
                 .attr('x', this.circleMax.attr('cx'))
-                .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
         } else {
             this.bar0
                 .attr('x', this.circleMin.attr('cx'))
@@ -274,7 +274,7 @@ export class RangeSlider {
 
         if (this.isInverted) {
             // create bar1, set positions of both
-            this.bar1 = this.g.insert('rect','#bar0')
+            this.bar1 = this.g.insert('rect', '#bar0')
                 .attr('x', this.RIGHT)
                 .attr('y', this.TOP)
                 .attr('height', this.BAR_WIDTH)

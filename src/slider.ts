@@ -44,7 +44,7 @@ export class Slider {
     bar: any;
     knob: any;
     rect: any;
-    appendTo(svg: d3.Selection<any>){ 
+    appendTo(svg: d3.Selection<any>) {
 
         this.svg = svg;
 
@@ -58,7 +58,7 @@ export class Slider {
 
 
         this.drag = d3.behavior.drag()
-            //.subject(Object)
+            .origin(Object)
             .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
             .on("drag", () => { this.dragMove() })
 
@@ -76,7 +76,6 @@ export class Slider {
             .attr("y2", this.TOP)
             .style("stroke", "#aaa")
 
-//        console.log('APPENDTO');
         this.knob = this.g.append("circle")
             .attr("id", "#sliderKnob")
             .attr("r", this.RADIUS_HANDLE)
@@ -84,7 +83,6 @@ export class Slider {
             .attr("cy", this.TOP)
             .attr("fill", "#777")
             .call(this.drag);
-//        console.log('FINISH');
     }
 
     dragStartXMouse: any;
@@ -94,11 +92,12 @@ export class Slider {
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
         var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        console.log(sourceEvent);
         this.dragObj = sourceEvent ? sourceEvent.target : undefined;
+        console.log(this.dragObj);
     }
 
     dragMove() {
-        console.log("DRAGGGG");
         d3.select(this.dragObj).attr("cx", Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX())));
         this.dragEnd()
     }

@@ -83,11 +83,10 @@ export class SmartSlider {
             .attr("width", this.width)
             .attr("transform", "translate(" + this.x + "," + this.y + ")");
 
-        console.log("Here");
         this.drag = d3.behavior.drag()
             .origin(Object)
-            .on("dragstart", () => { this.dragStart() }) // only "start" in d3 v4
-            .on("drag", () => { this.dragMove() });
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
+            .on("drag", () => { this.dragMove() })
 
         this.g.append("line")
             .attr("x1", this.LEFT)
