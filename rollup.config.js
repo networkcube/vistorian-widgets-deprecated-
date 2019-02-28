@@ -16,7 +16,7 @@ export default {
     ],
     output: {
         file: 'lib/vistorian-widgets.js',
-        format: 'cjs',
+        format: 'umd',
         sourcemap: true,
         name: 'vc',
         globals: {
