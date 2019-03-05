@@ -1,4 +1,7 @@
-import * as d3 from 'd3'
+// import * as d3 from 'd3'
+// <reference path="../d3.d.ts"/>
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 
 export class Slider {
 
@@ -44,7 +47,7 @@ export class Slider {
     bar: any;
     knob: any;
     rect: any;
-    appendTo(svg: d3.Selection<any>) {
+    appendTo(svg: D3.Selection) {
 
         this.svg = svg;
 
@@ -92,7 +95,7 @@ export class Slider {
     dragStart() {
         console.log("DRAGSTART")
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var sourceEvent = d3.event.sourceEvent; // (d3.event as d3.BaseEvent)
         console.log(sourceEvent);
         this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         console.log(this.dragObj);
@@ -111,8 +114,8 @@ export class Slider {
 
 
     getRelX(): number {
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
-        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        var sourceEvent = d3.event.sourceEvent;
+        var pageX = sourceEvent ? sourceEvent.pageX : 0; // <MouseEvent>
         return pageX - this.LEFT - this.x - this.rect.left;
     }
 

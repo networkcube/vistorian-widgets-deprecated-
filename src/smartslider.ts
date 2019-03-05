@@ -1,4 +1,7 @@
-import * as d3 from 'd3'
+// import * as d3 from 'd3'
+// <reference path="../d3.d.ts"/>
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 
 export class SmartSlider {
 
@@ -65,7 +68,7 @@ export class SmartSlider {
     rect: any;
     singleTimeStepX = 0;
 
-    appendTo(svg: d3.Selection<any>) {
+    appendTo(svg: D3.Selection) {
 
         this.svg = svg;
 
@@ -183,7 +186,7 @@ export class SmartSlider {
 
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()));
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var sourceEvent = d3.event.sourceEvent; // d3.BaseEvent
         this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         if (this.isInverted) {
             // determine whether we are left of min, in between, or right of max
@@ -251,8 +254,8 @@ export class SmartSlider {
 
 
     getRelX(): number {
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
-        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        var sourceEvent = d3.event.sourceEvent;
+        var pageX = sourceEvent ? sourceEvent.pageX : 0;
         return pageX - this.LEFT - this.x - this.rect.left;
     }
 

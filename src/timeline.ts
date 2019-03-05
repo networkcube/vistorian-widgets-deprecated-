@@ -1,10 +1,12 @@
-// <reference types="vistorian-core" />
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+// <reference path="../node_modules/vistorian-core/d3.d.ts"/>
+
 
 import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as moment from "moment";
 import * as utils from "vistorian-core/src/utils";
 
-import * as d3 from 'd3';
+//import * as d3 from 'd3';
 import {
     WebGL,
     WebGLElementQuery

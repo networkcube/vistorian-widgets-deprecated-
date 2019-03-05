@@ -34,10 +34,8 @@
     "homepage": "https://github.com/networkcube/networkcube#readme",
     "dependencies": {
         "jquery": "^3.3.1",
-        "@types/d3": "^3.0",
         "@types/three": "^0.93.15",
         "moment": "^2.23.0",
-        "d3": "^3.0",
         "three": "^0.100.0",
         "vistorian-core": "file:../vistorian-core"
     }

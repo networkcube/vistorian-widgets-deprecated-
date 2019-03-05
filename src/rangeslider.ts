@@ -1,4 +1,7 @@
-import * as d3 from 'd3'
+//import * as d3 from 'd3'
+// <reference path="../d3.d.ts"/>
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 
 export class RangeSlider {
 
@@ -61,7 +64,7 @@ export class RangeSlider {
     circleMax: any;
     rect: any;
 
-    appendTo(svg: d3.Selection<any>) {
+    appendTo(svg: D3.Selection) {
 
         console.log("RANGESLIDER");
         console.log(svg);
@@ -174,7 +177,7 @@ export class RangeSlider {
 
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()));
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
+        var sourceEvent = d3.event.sourceEvent; //(d3.event as D3.BaseEvent)
         this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         if (this.isInverted) {
             // determine whether we are left of min, in between, or right of max
@@ -238,8 +241,8 @@ export class RangeSlider {
 
 
     getRelX(): number {
-        var sourceEvent = (d3.event as d3.BaseEvent).sourceEvent;
-        var pageX = sourceEvent ? (<MouseEvent>sourceEvent).pageX : 0;
+        var sourceEvent = d3.event.sourceEvent; //(d3.event as D3.BaseEvent)
+        var pageX = sourceEvent ? sourceEvent.pageX : 0;
         return pageX - this.LEFT - this.x - this.rect.left;
     }
 

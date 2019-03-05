@@ -1,4 +1,6 @@
-import * as d3 from 'd3'
+// <reference path="../d3.d.ts"/>
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 import { Slider } from './slider'
 
 export function makeSlider(
@@ -49,7 +51,7 @@ export class RadioButton {
 
 
 
-    appendTo(x: number, y: number, svg: d3.Selection<any>) { // ?????????????
+    appendTo(x: number, y: number, svg: D3.Selection) { // ?????????????
         var g = svg.append('g')
             .attr('transform', 'translate(' + x + ',' + y + ')');
 

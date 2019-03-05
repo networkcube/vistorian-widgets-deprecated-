@@ -1,7 +1,9 @@
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as messenger from "vistorian-core/src/messenger";
 
-// import { Slider } from './slider'
+// <reference path="../d3.d.ts"/>
 
 import { SmartSlider } from './smartslider'
 
@@ -9,7 +11,7 @@ import {
     RadioButton
 } from './ui'
 
-import * as d3 from 'd3'
+//import * as d3 from 'd3'
 import * as m from 'moment'
 
 export class TimeSlider {
@@ -97,7 +99,7 @@ export class TimeSlider {
             .domain([dgraph.gran_min, dgraph.gran_max]);
     }
 
-    appendTo(svg: d3.Selection<any>, x?: number, y?: number) {
+    appendTo(svg: D3.Selection, x?: number, y?: number) {
 
         if (!x) x = 0
         if (!y) y = 0
@@ -149,7 +151,7 @@ export class TimeSlider {
     }
 
 
-    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: d3.Selection<any>) {
+    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: D3.Selection) {
         var time: dynamicgraph.Time;
         var displayLabelSpacing: number = 1; // display every label
         while (Math.floor(this.sliderWidth / this.TICK_LABEL_GAP) < (tickTimes.length / displayLabelSpacing) && displayLabelSpacing < 100) {
