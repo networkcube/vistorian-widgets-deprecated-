@@ -2,7 +2,7 @@
 
 import * as dynamicgraph from 'vistorian-core/src/dynamicgraph';
 
-// import * as d3 from 'd3'
+//import * as d3 from 'd3'
 
 import $ from 'jquery'
 

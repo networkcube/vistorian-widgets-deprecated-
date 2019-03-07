@@ -1,5 +1,4 @@
-// import * as d3 from 'd3'
-// <reference path="../d3.d.ts"/>
+//import * as d3 from 'd3'
 /// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
 
 
@@ -115,7 +114,7 @@ export class Slider {
 
     getRelX(): number {
         var sourceEvent = d3.event.sourceEvent;
-        var pageX = sourceEvent ? sourceEvent.pageX : 0; // <MouseEvent>
+        var pageX = sourceEvent ? (sourceEvent).pageX : 0; // <MouseEvent>
         return pageX - this.LEFT - this.x - this.rect.left;
     }
 

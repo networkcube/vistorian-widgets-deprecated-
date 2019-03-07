@@ -1,7 +1,7 @@
-// <reference path="../d3.d.ts"/>
 /// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
 
 import { Slider } from './slider'
+//import * as d3 from 'd3';
 
 export function makeSlider(
     d3parent: any, // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>, // ?????????????

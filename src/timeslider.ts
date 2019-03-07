@@ -3,7 +3,6 @@
 import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as messenger from "vistorian-core/src/messenger";
 
-// <reference path="../d3.d.ts"/>
 
 import { SmartSlider } from './smartslider'
 
