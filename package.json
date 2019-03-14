@@ -33,9 +33,7 @@
     ],
     "homepage": "https://github.com/networkcube/networkcube#readme",
     "dependencies": {
-        "@types/d3": "^3.5.41",
         "@types/three": "^0.93.15",
-        "d3": "^3.4",
         "jquery": "^3.3.1",
         "moment": "^2.23.0",
         "three": "^0.100.0",
