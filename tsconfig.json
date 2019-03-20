@@ -1,26 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "system",
-        "lib": ["es6", "dom"],
+        "outDir": "./build/",
+        "target": "es6",
+        "module": "es2015",
         "sourceMap": true,
-        "outFile": "./lib/index.js",
         "strict": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "declaration": true
     },
     "pretty": false,
-    "files": [
-        "./src/legend.ts",
-        "./src/rangeslider.ts",
-        "./src/slider.ts",
-        "./src/smartslider.ts",
-        "./src/timeline.ts",
-        "./src/timeslider.ts",
-        "./src/ui.ts",
-        "./src/glutils.ts",
-        "./src/BSpline.ts"
+    "files": ["src/index.ts"],
+    "include": [
+        "src/**/*.ts"
     ]
 }

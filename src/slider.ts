@@ -1,4 +1,6 @@
-import * as d3 from 'd3'
+//import * as d3 from 'd3'
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 
 export class Slider {
 
@@ -44,20 +46,22 @@ export class Slider {
     bar: any;
     knob: any;
     rect: any;
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>){ // ?????????????) {
+    appendTo(svg: D3.Selection) {
 
         this.svg = svg;
 
+        // this.rect = (this.svg as any)['_groups'][0][0].getBoundingClientRect(); // D3 V4
         this.rect = (this.svg as any)[0][0].getBoundingClientRect();
 
-        this.valueRange = d3.scaleLinear()
+
+        this.valueRange = d3.scale.linear()
             .domain([0, this.width])
             .range([this.min, this.max])
 
 
-        this.drag = d3.drag()
-            .subject(Object)
-            .on("dragstart", () => { this.dragStart() })
+        this.drag = d3.behavior.drag()
+            .origin(Object)
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
             .on("drag", () => { this.dragMove() })
 
         this.svg = svg;
@@ -89,7 +93,8 @@ export class Slider {
     currentBarLength: any;
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
-        this.dragObj = d3.event.sourceEvent.target
+        var sourceEvent = d3.event.sourceEvent; // (d3.event as d3.BaseEvent)
+        this.dragObj = sourceEvent ? sourceEvent.target : undefined;
     }
 
     dragMove() {
@@ -105,7 +110,9 @@ export class Slider {
 
 
     getRelX(): number {
-        return d3.event.sourceEvent.pageX - this.LEFT - this.x - this.rect.left
+        var sourceEvent = d3.event.sourceEvent;
+        var pageX = sourceEvent ? (sourceEvent).pageX : 0; // <MouseEvent>
+        return pageX - this.LEFT - this.x - this.rect.left;
     }
 
 
