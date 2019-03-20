@@ -65,8 +65,6 @@ export class RangeSlider {
 
     appendTo(svg: D3.Selection) {
 
-        console.log("RANGESLIDER");
-        console.log(svg);
         this.svg = svg;
 
         //this.rect = this.svg['_groups'][0][0].getBoundingClientRect(); // d3 v4

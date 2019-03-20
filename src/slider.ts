@@ -92,12 +92,9 @@ export class Slider {
     dragObj: any;
     currentBarLength: any;
     dragStart() {
-        console.log("DRAGSTART")
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()))
         var sourceEvent = d3.event.sourceEvent; // (d3.event as d3.BaseEvent)
-        console.log(sourceEvent);
         this.dragObj = sourceEvent ? sourceEvent.target : undefined;
-        console.log(this.dragObj);
     }
 
     dragMove() {

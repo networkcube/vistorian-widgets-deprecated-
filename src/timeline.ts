@@ -4,14 +4,12 @@ import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as moment from "moment";
 import * as utils from "vistorian-core/src/utils";
 
-// import * as d3 from 'd3';
 import {
     WebGL,
     WebGLElementQuery
 } from './glutils';
 
 export class Timeline {
-    /* INIT ????? */
 
     TICK_MIN_DIST = 13;
     LABEL_MIN_DIST = 13;
@@ -67,13 +65,9 @@ export class Timeline {
     visualize() {
 
         /* MOVE TO CONSTRUCTOR */
-        // this.granules = dynamicgraph.GRANULARITY;
         var times = this.network.times().toArray();
-        // this.minGran = this.network.getMinGranularity();
-        // this.maxGran = this.granules.length - 1;
 
         // create non-indexed times
-        // IF UNDEFINED??
         var unix_start = times[0] ? times[0].unixTime() : 0;
         var unix_end = times[times.length - 1] ? times[times.length - 1].unixTime() : 0;
 
@@ -103,7 +97,6 @@ export class Timeline {
         var granularitySet: boolean
         var y1: any, y2: any;
         var to1: any, to2: any;
-        // console.log('this.timeObjects.length', this.timeObjects.length)
         for (var i = 0; i < this.timeObjects.length; i++) {
             granularitySet = false
             if (i == 0)
@@ -207,12 +200,10 @@ export class Timeline {
         if (endId == undefined) {
             endId = this.timeObjects.length - 1
         }
-        // console.log('start, end', startId, endId)
         this.updateWithIds(startId, endId)
     }
 
     updateWithIds(minTimeId: any, maxTimeId: any) {
-        // console.log('updateWithId', minTimeId, maxTimeId)
 
         this.minTimeId = minTimeId;
         this.maxTimeId = maxTimeId;
@@ -220,7 +211,6 @@ export class Timeline {
         this.position_x.domain([minTimeId, maxTimeId]);
 
         var ticksFitting = Math.floor(this.WIDTH / this.TICK_MIN_DIST);
-        console.log('ticksFitting', ticksFitting)
         var minTime = this.timeObjects[this.minTimeId];
         var maxTime = this.timeObjects[this.maxTimeId];
         var requiredTicks: number = Number.MAX_VALUE; // INIT?
@@ -248,8 +238,6 @@ export class Timeline {
 
         this.label_minGran_visible = this.tick_minGran_visible
 
-        // this.position_y
-        //     .domain([this.tick_minGran_visible-1, this.maxGran])
         this.label_opacity
             .domain([this.tick_minGran_visible - 1, this.maxGran])
 
@@ -276,7 +264,6 @@ export class Timeline {
                 .style('fill', '#000')
                 .attr('rotation', 90)
                 .style('font-size', 10)
-                // .style('opacity', (d,i)=>this.label_opacity(this.timeGranularities[this.timeObjects.indexOf(d)]))
                 .style('opacity', .1)
 
             console.log('time labels created:', this.timeLabels.length)
@@ -284,7 +271,6 @@ export class Timeline {
         }
         this.tick_minGran_visible_prev = this.tick_minGran_visible;
 
-        // console.log('this.minGran_visible',this.granules[this.tick_minGran_visible])
         this.tickmarks
             .style('opacity', (d: any, i: number) => {
                 var visible =
@@ -298,8 +284,6 @@ export class Timeline {
             })
             .attr('x1', (d: any, i: number) => this.position_x(i))
             .attr('x2', (d: any, i: number) => this.position_x(i))
-            // .attr('y1',(d,i)=> { this.position_y(d) })
-            // .attr('y2',(d,i)=> -this.HEIGHT)
             .style('stroke-width', (d: any, i: number) => this.label_opacity(this.timeGranularities[i]) * 4)
 
 

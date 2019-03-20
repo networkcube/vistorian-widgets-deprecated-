@@ -1,10 +1,9 @@
 /// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
 
 import { Slider } from './slider'
-//import * as d3 from 'd3';
 
 export function makeSlider(
-    d3parent: any, // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>, // ?????????????
+    d3parent: any, // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>, 
     label: string,
     width: number,
     height: number,
@@ -33,8 +32,8 @@ export class RadioButton {
 
     private checked: boolean = false;
 
-    circle: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; // ?????????????
-    label: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; // ?????????????
+    circle: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; 
+    label: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; 
 
     color: string;
     text: string = '';
@@ -51,7 +50,7 @@ export class RadioButton {
 
 
 
-    appendTo(x: number, y: number, svg: D3.Selection) { // ?????????????
+    appendTo(x: number, y: number, svg: D3.Selection) { 
         var g = svg.append('g')
             .attr('transform', 'translate(' + x + ',' + y + ')');
 
@@ -68,14 +67,11 @@ export class RadioButton {
             this.label = g.append('text')
                 .attr('x', this.RADIUS * 1.4)
                 .attr('y', 5)
-                // .attr('x', 20)
-                // .attr('y', 5)
                 .style('font-family', 'Helvetica')
                 .style('font-size', '9pt')
                 .style('user-select', 'none')
                 .text(this.text[0])
                 .on('click', () => {
-                    console.log(this.checked)
                     this.checked = !this.checked;
                     if (this.checked) {
                         this.circle.attr('fill', this.color);
