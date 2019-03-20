@@ -1,4 +1,6 @@
-import * as d3 from 'd3'
+//import * as d3 from 'd3'
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+
 
 export class RangeSlider {
 
@@ -61,21 +63,22 @@ export class RangeSlider {
     circleMax: any;
     rect: any;
 
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
+    appendTo(svg: D3.Selection) {
 
         this.svg = svg;
 
+        //this.rect = this.svg['_groups'][0][0].getBoundingClientRect(); // d3 v4
         this.rect = this.svg[0][0].getBoundingClientRect();
 
-        this.valueRange = d3.scaleLinear()
+        this.valueRange = d3.scale.linear()
             .domain([0, this.width])
             .range([this.min, this.max])
 
 
-        this.drag = d3.drag()
-            .subject(Object)
-            .on("dragstart", () => { this.dragStart() })
-            .on("drag", () => { this.dragMove() });
+        this.drag = d3.behavior.drag()
+            .origin(Object)
+            .on("dragstart", () => { this.dragStart() }) // d3 v4 is only "start"
+            .on("drag", () => { this.dragMove() })
 
         this.svg = svg;
 
@@ -92,7 +95,7 @@ export class RangeSlider {
             .style("stroke", "#aaa");
 
         if (this.hasTickmarks) {
-            this.val2spaceScale = d3.scaleLinear()
+            this.val2spaceScale = d3.scale.linear()
                 .domain([this.min, this.max])
                 .range([this.LEFT, this.width - this.RIGHT - this.LEFT]);
 
@@ -163,7 +166,7 @@ export class RangeSlider {
             .attr("fill", "#777")
             .call(this.drag);
     }
-    
+
     dragStartXMouse: number = 0; // BEFORE number;
     dragStartXBar: number = 0; // BEFORE number;
     dragObj: any;
@@ -171,7 +174,8 @@ export class RangeSlider {
 
     dragStart() {
         this.dragStartXMouse = Math.max(this.LEFT, Math.min(this.width - this.RIGHT, this.getRelX()));
-        this.dragObj = d3.event.sourceEvent.target;
+        var sourceEvent = (d3.event).sourceEvent; //(d3.event as D3.BaseEvent)
+        this.dragObj = sourceEvent ? sourceEvent.target : undefined;
         if (this.isInverted) {
             // determine whether we are left of min, in between, or right of max
             // the startxbar is the left end of whichever segment we are in, 
@@ -216,7 +220,7 @@ export class RangeSlider {
                     .attr('width', this.circleMin.attr('cx') - this.LEFT);
                 this.bar1
                     .attr('x', this.circleMax.attr('cx'))
-                    .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                    .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
             } else {
                 this.bar0.attr('x', this.circleMin.attr('cx'))
                     .attr('width', this.circleMax.attr('cx') - this.circleMin.attr('cx'));
@@ -234,7 +238,9 @@ export class RangeSlider {
 
 
     getRelX(): number {
-        return d3.event.sourceEvent.pageX - this.LEFT - this.x - this.rect.left
+        var sourceEvent = (d3.event).sourceEvent; //(d3.event as D3.BaseEvent)
+        var pageX = sourceEvent ? (sourceEvent).pageX : 0;
+        return pageX - this.LEFT - this.x - this.rect.left;
     }
 
 
@@ -252,7 +258,7 @@ export class RangeSlider {
                 .attr('width', this.circleMin.attr('cx'));
             this.bar1
                 .attr('x', this.circleMax.attr('cx'))
-                .attr('width', this.width - (this.RIGHT*2) - this.circleMax.attr('cx'));
+                .attr('width', this.width - (this.RIGHT * 2) - this.circleMax.attr('cx'));
         } else {
             this.bar0
                 .attr('x', this.circleMin.attr('cx'))
@@ -268,7 +274,7 @@ export class RangeSlider {
 
         if (this.isInverted) {
             // create bar1, set positions of both
-            this.bar1 = this.g.insert('rect','#bar0')
+            this.bar1 = this.g.insert('rect', '#bar0')
                 .attr('x', this.RIGHT)
                 .attr('y', this.TOP)
                 .attr('height', this.BAR_WIDTH)

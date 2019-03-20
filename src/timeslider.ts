@@ -1,8 +1,8 @@
-import * as queries from "queries";
-import * as dynamicgraph from "dynamicgraph";
-import * as messenger from "messenger";
+/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
 
-// import { Slider } from './slider'
+import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
+import * as messenger from "vistorian-core/src/messenger";
+
 
 import { SmartSlider } from './smartslider'
 
@@ -10,8 +10,7 @@ import {
     RadioButton
 } from './ui'
 
-import * as d3 from 'd3'
-import * as moment from 'moment'
+import * as m from 'moment'
 
 export class TimeSlider {
 
@@ -30,17 +29,16 @@ export class TimeSlider {
 
     dgraph: dynamicgraph.DynamicGraph;
     slider: SmartSlider;
-    times: queries.Time[];
+    times: dynamicgraph.Time[];
     sliderWidth: number;
     widgetWidth: number;
     callBack: Function | undefined = undefined;
-
 
     // function that is called when this time slider's time is changed
     propagateButton: RadioButton = new RadioButton('#000000');
 
     labelStart: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>;
-    labelEnd: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; // ???????????????
+    labelEnd: any; // BEFORE d3.Selection<d3.BaseType, {}, HTMLElement, any>; 
 
     tickScale: any;
     tickHeightFunction: Function;
@@ -50,10 +48,11 @@ export class TimeSlider {
         this.times = dgraph.times().toArray();
         this.widgetWidth = width;
 
+        var timesDummy = new dynamicgraph.Time(0, this.dgraph);
         this.sliderWidth = width - this.MARGIN_SLIDER_RIGHT + 5 - this.MARGIN_SLIDER_LEFT - 5;
-        var lastDummyYear: moment.Moment = this.times[this.times.length - 1].moment();
+        var lastDummyYear: m.Moment = this.times.length != 0 ? this.times[this.times.length - 1].moment() : timesDummy.moment(); // WHAT HAPPEND??
         var minGran: number = dgraph.gran_min;
-        var minGranName: moment.unitOfTime.DurationConstructor = 'milliseconds';
+        var minGranName: m.unitOfTime.DurationConstructor = 'milliseconds';
         switch (minGran) {
             case 1: minGranName = 'milliseconds'; break;
             case 2: minGranName = 'seconds'; break;
@@ -67,34 +66,30 @@ export class TimeSlider {
             // case 9: minGranName = 'centuries'; break;
             // case 10: minGranName = 'millenia'; break;
         }
-        console.log('minGran', minGranName);
-        
+
+        if (!lastDummyYear) {
+            lastDummyYear = m.unix(0);
+        }
+
         lastDummyYear.add(1, minGranName);
 
-        // console.log('unixTime', this.times[this.times.length - 1].unixTime())
-        console.log('unixTime', lastDummyYear.valueOf());
-        console.log('unixTime', lastDummyYear.valueOf());
-        // this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, this.times[0].unixTime(), this.times[this.times.length - 1].unixTime(), 1);
-        this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, this.times[0].unixTime(), lastDummyYear.valueOf(), 1);
+        let unixTimeSlider = this.times.length != 0 ? this.times[0].unixTime() : 0; // IS IT OK?? 
+        this.slider = new SmartSlider(this.MARGIN_SLIDER_LEFT, this.SLIDER_TOP, this.sliderWidth, unixTimeSlider, lastDummyYear.valueOf(), 1);
 
         if (callBack)
             this.callBack = callBack
 
-        this.tickScale = d3.scaleUtc()
+        this.tickScale = d3.time.scale.utc()
             .range([this.MARGIN_SLIDER_LEFT, this.MARGIN_SLIDER_LEFT + this.sliderWidth])
-            // .domain([new Date(dgraph.time(0).unixTime()), new Date(dgraph.times().last().unixTime())]);
-            // BEFORE .domain([dgraph.time(0).unixTime(), lastDummyYear.valueOf()])
-            .domain([this.times[0].unixTime(), lastDummyYear.valueOf()]);
+            .domain([unixTimeSlider, lastDummyYear.valueOf()]);
 
-        // var sdf = new Date(lastDummyYear.unix())
-        // console.log('year: ', sdf.getYear())
 
-        this.tickHeightFunction = d3.scaleLinear()
+        this.tickHeightFunction = d3.scale.linear()
             .range([4, this.SLIDER_TOP - 10])
             .domain([dgraph.gran_min, dgraph.gran_max]);
     }
 
-    appendTo(svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>, x?: number, y?: number) {
+    appendTo(svg: D3.Selection, x?: number, y?: number) {
 
         if (!x) x = 0
         if (!y) y = 0
@@ -105,8 +100,7 @@ export class TimeSlider {
         g.append("g")
             .attr('transform', 'translate(0,' + this.SLIDER_TOP + ')')
             .attr("class", "x axis")
-//            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
-            .call(d3.axisTop(this.tickScale));
+            .call(d3.svg.axis().scale(this.tickScale).orient("top"));
 
         this.labelStart = g.append('text')
             .attr('y', this.SLIDER_TOP + 20)
@@ -146,8 +140,8 @@ export class TimeSlider {
     }
 
 
-    drawTickmarks(granularity: number, tickTimes: queries.Time[], svg: d3.Selection<d3.BaseType, {}, HTMLElement, any>) {
-        var time: queries.Time;
+    drawTickmarks(granularity: number, tickTimes: dynamicgraph.Time[], svg: D3.Selection) {
+        var time: dynamicgraph.Time;
         var displayLabelSpacing: number = 1; // display every label
         while (Math.floor(this.sliderWidth / this.TICK_LABEL_GAP) < (tickTimes.length / displayLabelSpacing) && displayLabelSpacing < 100) {
             displayLabelSpacing++;
@@ -167,20 +161,17 @@ export class TimeSlider {
                     .style('font-weigth', '100')
                     .style('font-size', '7pt');
 
-                // console.log((granularity - this.dgraph.gran_min))
-                // console.log('->',((this.dgraph.gran_max - this.dgraph.gran_min))/((granularity - this.dgraph.gran_min)+1));
                 svg.append('line')
                     .attr('x1', this.tickScale(tickTimes[i].unixTime()))
                     .attr('x2', this.tickScale(tickTimes[i].unixTime()))
                     .attr('y1', this.SLIDER_TOP)
                     .attr('y2', this.SLIDER_TOP - this.tickHeightFunction(granularity))
                     .style('stroke', '#bbb');
-                // .style('opacity', 1.5 -((this.dgraph.gran_max - this.dgraph.gran_min))/((granularity - this.dgraph.gran_min)+1))
             }
         }
     }
 
-    formatAtGranularity(time: moment.Moment, granualarity: number) {
+    formatAtGranularity(time: m.Moment, granualarity: number) {
         switch (granualarity) {
             case 0: return time.millisecond();
             case 1: return time.second();
@@ -193,7 +184,7 @@ export class TimeSlider {
         }
     }
 
-    formatForGranularities(time: queries.Time, gran_min: number, gran_max: number) {
+    formatForGranularities(time: dynamicgraph.Time, gran_min: number, gran_max: number) {
         var formatString: string = ''
         var format: string;
         while (gran_max >= gran_min) {
@@ -217,29 +208,22 @@ export class TimeSlider {
 
 
     updateTime(minUnix: number, maxUnix: number, single: number) {
-        //var format = this.tickScale.tickFormat();
-        // console.log('update time()', minUnix, maxUnix)
         // times are still correct here? 
 
         var format = function (d: any) { return d.toDateString(); };
 
-        // min = Math.max(Math.round(min), 0);
-        // max = Math.min(Math.round(max), this.times.length-1);
         single = Math.round(single);
 
         this.labelStart
             .attr('x', this.slider.valueRange.invert(minUnix) + 10)
             .style('opacity', 1)
-            //.text(this.formatForGranularities(this.times[min].time(), this.dgraph.gran_min, this.dgraph.gran_max));
             .text(format(new Date(minUnix)));
 
         this.labelEnd
             .attr('x', this.slider.valueRange.invert(maxUnix) + 10)
             .style('opacity', 1)
-            //.text(this.formatForGranularities(this.times[max].time(), this.dgraph.gran_min, this.dgraph.gran_max));
             .text(format(new Date(maxUnix)));
 
-        // console.log('update time()', minUnix, maxUnix)
         if (this.callBack != undefined)
             this.callBack(minUnix, maxUnix, this.propagateButton.isChecked());
         else
@@ -248,11 +232,6 @@ export class TimeSlider {
 
 
     set(startUnix: number, endUnix: number) {
-        // console.log('startUnix, endUnix', startUnix, endUnix)
         this.slider.set(startUnix, endUnix)
     }
-
-
-
-
 }
