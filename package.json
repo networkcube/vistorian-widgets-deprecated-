@@ -1,6 +1,6 @@
 {
     "name": "vistorian-widgets",
-    "version": "0.0.1-alpha",
+    "version": "0.0.2-alpha",
     "description": "Vistorian-widgets is a java script / (Typescript) library and a programming framework for interactive network visualizations with:",
     "main": "lib/index.js",
     "private": false,
@@ -43,6 +43,6 @@
         "moment": "^2.23.0",
         "papaparse": "^4.6.3",
         "three": "^0.100.0",
-        "vistorian-core": "0.0.1-alpha"
+        "vistorian-core": "^0.0.1-alpha"
     }
 }
