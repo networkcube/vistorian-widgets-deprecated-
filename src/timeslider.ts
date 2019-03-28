@@ -1,4 +1,4 @@
-/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
+/// <reference path="./lib/d3.d.ts"/>
 
 import * as dynamicgraph from "vistorian-core/src/dynamicgraph";
 import * as messenger from "vistorian-core/src/messenger";

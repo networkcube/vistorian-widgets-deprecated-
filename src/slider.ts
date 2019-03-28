@@ -1,6 +1,4 @@
-//import * as d3 from 'd3'
-/// <reference path="../../vistorian-core/src/lib/d3.d.ts"/>
-
+/// <reference path="./lib/d3.d.ts"/>
 
 export class Slider {
 

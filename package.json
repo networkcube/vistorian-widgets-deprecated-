@@ -3,16 +3,20 @@
     "version": "0.0.1-alpha",
     "description": "Vistorian-widgets is a java script / (Typescript) library and a programming framework for interactive network visualizations with:",
     "main": "lib/index.js",
+    "private": false,
     "types": "lib/index.d.js",
     "scripts": {
         "build": "tsc --pretty false && rollup -c",
         "lint": "tslint -p . -e 'package.json'",
-        "clean": "rimraf lib"
+        "clean": "rimraf lib",
+        "prepare": "npm run build"
     },
     "author": "Benjamin Bach <benj.bach@gmail.com>",
     "license": "MIT",
     "devDependencies": {
         "@types/jquery": "^1.10.35",
+        "@types/lz-string": "^1.3.32",
+        "@types/papaparse": "^4.5.7",
         "rimraf": "^2.6.3",
         "rollup": "^1.1.2",
         "rollup-plugin-commonjs": "^9.2.0",
@@ -35,8 +39,10 @@
     "dependencies": {
         "@types/three": "^0.93.27",
         "jquery": "^3.3.1",
+        "lz-string": "^1.3.32",
         "moment": "^2.23.0",
+        "papaparse": "^4.6.3",
         "three": "^0.100.0",
-        "vistorian-core": "file:../vistorian-core"
+        "vistorian-core": "0.0.1-alpha"
     }
 }
